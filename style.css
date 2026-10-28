@@ -56,3 +56,8 @@ a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible,te
 .product-essentials ul{padding-left:19px;color:var(--muted);line-height:1.9;font-size:14px}
 @media(max-width:800px){.v10-baptism-inner,.product-essentials-grid{display:block}.v10-baptism .btn{margin-top:20px}.v10-guide-grid{grid-template-columns:1fr}.v10-guide{padding:65px 0}.q-advanced summary{flex-wrap:wrap;justify-content:flex-start}.q-advanced summary span{text-align:left;width:100%;padding-left:30px}.v10-legal{width:min(100% - 40px,930px)}}
 @media(prefers-reduced-motion:reduce){.category-photo img,.sector-card img{transition:none!important}}
+
+.v10-faq-small{max-width:760px;margin:28px 0 34px;border-top:1px solid var(--line)}
+.v10-faq-small details{border-bottom:1px solid var(--line);padding:16px 2px}
+.v10-faq-small summary{font-weight:600;color:var(--navy);font-size:14px;cursor:pointer}
+.v10-faq-small p{font-size:13px;line-height:1.85;color:var(--muted);padding-top:10px}
