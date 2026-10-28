@@ -64,13 +64,13 @@ if(/retirada|local|endereco|osasco|sao paulo/.test(s))return ["Somos um e-commer
 return ["Cada história começa com uma conversa. Conte qual peça imagina bordar, para quem é e quantas unidades deseja. Se tiver uma foto, logo ou tecido próprio, podemos avaliar tudo pelo WhatsApp.","orcamento.html"];
 }
 function ask(q){last=clean(q);if(!last)return;addLine(last,"user");
-const [text,page]=answer(last);addLine(text,"bot");suggestions.replaceChildren();
+const [text,page]=answer(last);track("ateliello_assistant_topic",{destination:page});addLine(text,"bot");suggestions.replaceChildren();
 const a=document.createElement("a");a.href=page;a.textContent="Ver detalhes desta opção ↗";a.className="at-assistant-link";suggestions.append(a);
 suggest("Montar orçamento",()=>{location.href="orcamento.html"});
 wa.href="https://wa.me/551154441399?text="+encodeURIComponent("Olá, Ateliello Uniformes e Bordados! Vim pelo site. Gostaria de orientação sobre: "+last);
 }
-function setOpen(v){dialog.hidden=!v;toggle.setAttribute("aria-expanded",String(v));if(v){if(!feed.childElementCount){addLine("Olá! ✨ Posso ajudar você a encontrar uma peça, escolher tecidos ou preparar um orçamento. O que gostaria de personalizar?","bot");actions.forEach(([label,q])=>suggest(label,()=>ask(q)));}input.focus();}else toggle.focus();}
-toggle.addEventListener("click",()=>setOpen(dialog.hidden));close.addEventListener("click",()=>setOpen(false));
+function setOpen(v){dialog.hidden=!v;toggle.setAttribute("aria-expanded",String(v));if(v)track("ateliello_assistant_open",{source_page:location.pathname});if(v){if(!feed.childElementCount){addLine("Olá! ✨ Posso ajudar você a encontrar uma peça, escolher tecidos ou preparar um orçamento. O que gostaria de personalizar?","bot");actions.forEach(([label,q])=>suggest(label,()=>ask(q)));}input.focus();}else toggle.focus();}
+toggle.addEventListener("click",()=>setOpen(dialog.hidden));close.addEventListener("click",()=>setOpen(false));wa.addEventListener("click",()=>track("ateliello_assistant_whatsapp_click",{source_page:location.pathname}));
 form.addEventListener("submit",e=>{e.preventDefault();const q=input.value;input.value="";ask(q)});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!dialog.hidden)setOpen(false)});
 })();
