@@ -15,4 +15,5 @@ jobs:
       - run: node scripts/check_assistant.mjs
       - run: node scripts/check_campaign.mjs
       - run: node scripts/check_brand.mjs
+      - run: bash -n scripts/publicar_locaweb.sh
       - run: node --check app.js

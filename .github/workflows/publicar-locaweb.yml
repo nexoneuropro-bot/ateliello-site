@@ -1,0 +1,66 @@
+name: Publicar manualmente na Locaweb
+on:
+  workflow_dispatch:
+    inputs:
+      confirmacao:
+        description: "Digite PUBLICAR ATELIELLO após validar domínio, SSL e backup"
+        required: true
+        type: string
+      email_verificado:
+        description: "A caixa contato@ateliello.com.br já envia e recebe?"
+        required: true
+        default: false
+        type: boolean
+permissions:
+  contents: read
+concurrency:
+  group: ateliello-locaweb-producao
+  cancel-in-progress: false
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    environment: locaweb-producao
+    steps:
+      - name: Conferir autorização da publicação
+        env:
+          CONFIRMACAO: ${{ inputs.confirmacao }}
+          SITE_DOMAIN: ${{ vars.ATELIELLO_DOMAIN }}
+          FTPS_PATH: ${{ vars.LOCAWEB_FTPS_REMOTE_DIR }}
+        run: |
+          set -euo pipefail
+          test "$CONFIRMACAO" = "PUBLICAR ATELIELLO"
+          test "$SITE_DOMAIN" = "ateliello.com.br"
+          test -n "$FTPS_PATH"
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+      - name: Verificações antes de publicar
+        run: |
+          python3 scripts/check_site.py
+          node --check app.js
+          node scripts/check_assistant.mjs
+          node scripts/check_campaign.mjs
+          node scripts/check_brand.mjs
+          bash -n scripts/publicar_locaweb.sh
+      - name: Gerar versão de produção
+        env:
+          RELEASE_APPROVED: "yes"
+          SITE_URL: https://ateliello.com.br
+          EMAIL_VERIFIED: ${{ inputs.email_verificado == true && 'yes' || 'no' }}
+        run: |
+          node scripts/build_locaweb.mjs --production
+          node scripts/check_release.mjs --production
+      - name: Instalar cliente FTPS
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends lftp
+      - name: Transferir arquivos via FTPS
+        env:
+          LOCAWEB_FTPS_HOST: ${{ secrets.LOCAWEB_FTPS_HOST }}
+          LOCAWEB_FTPS_USER: ${{ secrets.LOCAWEB_FTPS_USER }}
+          LOCAWEB_FTPS_PASSWORD: ${{ secrets.LOCAWEB_FTPS_PASSWORD }}
+          LOCAWEB_FTPS_REMOTE_DIR: ${{ vars.LOCAWEB_FTPS_REMOTE_DIR }}
+        run: bash scripts/publicar_locaweb.sh
