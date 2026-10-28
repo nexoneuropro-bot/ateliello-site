@@ -1,0 +1,4 @@
+Publicação de PRÉVIA autorizada pelo responsável pela Ateliello em 28/10/2026.
+Modo: prévia, sem indexação pública.
+Destino: Locaweb Go Linux, public_html.
+Segredo registrado pelo responsável no GitHub Actions.
