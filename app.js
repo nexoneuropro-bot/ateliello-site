@@ -1,6 +1,9 @@
 (()=>{'use strict';
 const $=(q,r=document)=>r.querySelector(q),$$=(q,r=document)=>Array.from(r.querySelectorAll(q));
-const menu=$('.menu-toggle'),nav=$('.main-nav');menu?.addEventListener('click',()=>{let open=!nav.classList.contains('open');nav.classList.toggle('open',open);menu.setAttribute('aria-expanded',String(open));});
+const menu=$('.menu-toggle'),nav=$('.main-nav');
+const moreLinks=[['Uniformes','uniformes-personalizados.html','Produção para empresas'],['Bordados','bordado-em-pecas-do-cliente.html','Bordado na sua peça'],['Para você','toalhas-batismo-personalizadas.html','Toalha de batismo']];
+for(const [label,url,title] of moreLinks){const group=$('.menu-drop').find(el=>el.querySelector('button')?.textContent.includes(label));const panel=group?.querySelector('.drop-panel');if(panel&&!$('a',panel).some(a=>a.getAttribute('href')===url)){const a=document.createElement('a');a.href=url;a.textContent=title;panel.appendChild(a);}}
+menu?.addEventListener('click',()=>{let open=!nav.classList.contains('open');nav.classList.toggle('open',open);menu.setAttribute('aria-expanded',String(open));});
 $$('.menu-drop>button').forEach(b=>b.addEventListener('click',()=>{const p=b.parentElement,opened=p.classList.toggle('open');b.setAttribute('aria-expanded',String(opened));}));
 $$('.main-nav a').forEach(a=>a.addEventListener('click',()=>{nav?.classList.remove('open');menu?.setAttribute('aria-expanded','false');}));
 const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
