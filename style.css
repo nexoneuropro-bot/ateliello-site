@@ -8,3 +8,51 @@
 
 /* Ateliello V9 — dois processos, uma identidade */
 .v9-personal{background:linear-gradient(180deg,#fffcf8,#f8f4ee)}.v9-worlds{display:grid;grid-template-columns:1fr 1fr;gap:22px}.v9-world{min-height:390px;background:#fff;border:1px solid #e4dacd;border-radius:9px;padding:clamp(27px,4vw,53px);display:flex;flex-direction:column;align-items:flex-start;box-shadow:0 10px 38px #10273c08}.v9-world h3{font:clamp(31px,3vw,45px)/1.2 var(--serif);color:var(--navy);margin:16px 0 19px}.v9-world p{line-height:1.8;color:var(--muted);font-size:14px}.v9-world .v9-detail{background:#f4efe7;padding:15px 19px;border-radius:6px;color:#384655;width:100%;font-size:13px}.v9-world .text-link{margin-top:auto}.v9-inline{font-size:12px;margin-top:19px;color:var(--bronze);font-weight:600}.v9-world-company{background:var(--navy);border-color:var(--navy)}.v9-world-company h3,.v9-world-company p,.v9-world-company .text-link{color:#fff}.v9-world-company .eyebrow,.v9-world-company .v9-inline{color:#e2c39e}.v9-world-company .v9-detail{background:#ffffff12;color:#e8ecef}.v9-world-company .text-link{border-color:#d6b58b}.v9-form-hint{font-size:12px;color:#6f7780;line-height:1.6;background:#f6f1e9;border-left:2px solid #997653;padding:11px 15px;margin:0;grid-column:1/-1}.v9-price{display:inline-block;padding:12px 20px;background:#f2e5d4;border:1px solid #d7bc94;color:#2b3f50;border-radius:6px;font-size:17px;font-weight:700;margin:10px 0}.v9-price small{display:block;font-size:11px;font-weight:400;color:#5a6370}.v9-faq{max-width:1040px;margin:auto}.v9-faq details{padding:20px 4px;border-bottom:1px solid #e6dfd4}.v9-faq summary{font-weight:700;color:var(--navy);cursor:pointer}.v9-faq p{font-size:14px;color:var(--muted);line-height:1.8;margin:12px 0}.v9-prose{max-width:1080px;display:grid;grid-template-columns:1fr 1fr;gap:40px}.v9-prose p{color:var(--muted);line-height:1.85}.v9-prose h3{font:28px var(--serif);color:var(--navy)}@media(max-width:760px){.v9-worlds,.v9-prose{grid-template-columns:1fr}.v9-world{min-height:0;padding:29px 23px}.v9-world h3{font-size:34px}.v9-personal .section-heading{margin-bottom:28px}}
+
+/* Ateliello V10: qualidade percebida com clareza comercial */
+:root{--v10-accent:#a48665}
+a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid #bd9a6f;outline-offset:4px}
+.v10-baptism{background:#f5efe6;border-block:1px solid #eadfd1;padding:30px 0}
+.v10-baptism-inner{display:flex;align-items:center;justify-content:space-between;gap:30px}
+.v10-baptism h3{font:clamp(24px,2.4vw,34px)/1.25 var(--serif);color:var(--navy);margin:9px 0}
+.v10-baptism p{color:var(--muted);margin:0;font-size:13px;max-width:700px}
+.v10-baptism .btn{flex-shrink:0;background:var(--paper)}
+.q-advanced{border:1px solid var(--line);background:#faf7f2;border-radius:7px;margin:9px 0 4px;grid-column:1/-1}
+.q-advanced summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:20px;padding:19px 20px;cursor:pointer;color:var(--navy)}
+.q-advanced summary::-webkit-details-marker{display:none}
+.q-advanced summary strong{font-size:13px}
+.q-advanced summary span{font-size:12px;color:var(--muted);text-align:right}
+.q-advanced summary:before{content:'+';font:24px var(--serif);color:var(--bronze)}
+.q-advanced[open] summary:before{content:'−'}
+.q-advanced-fields{padding:0 20px 22px!important;display:grid}
+.v10-order-actions{display:flex;gap:8px;flex-wrap:wrap}
+.v10-order-actions button{background:transparent;border:1px solid #cbb9a2;color:var(--navy);border-radius:4px;padding:5px 9px;font-size:11px}
+.v10-cart-total{color:var(--bronze);font-weight:600;font-size:12px}
+.fine-print a{text-decoration:underline;text-underline-offset:3px}
+.v10-guide{padding:80px 0;background:#f8f5f0}
+.v10-guide .shell{max-width:1200px}
+.v10-guide h2{font:clamp(36px,4vw,54px)/1.15 var(--serif);color:var(--navy);margin:10px 0 25px}
+.v10-guide-intro{max-width:770px;color:var(--muted);line-height:1.8}
+.v10-guide-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:30px}
+.v10-guide article{padding:27px;border:1px solid #e5dacf;background:#fff;border-radius:7px}
+.v10-guide h3{font:24px/1.2 var(--serif);color:var(--navy);margin:9px 0}
+.v10-guide article p{font-size:13px;line-height:1.8;color:var(--muted);margin:0}
+.v10-guide .eyebrow{letter-spacing:.15em}
+.v10-legal{max-width:930px;margin:auto;padding:60px 0 100px}
+.v10-legal h1{font-size:clamp(42px,5vw,65px);margin:15px 0 34px}
+.v10-legal h2{font-size:clamp(24px,3vw,32px);margin:40px 0 12px}
+.v10-legal p,.v10-legal li{color:#455565;line-height:1.9;font-size:15px}
+.v10-legal ul{padding-left:21px}
+.v10-legal .intro{font-size:18px;color:#344c60}
+.v10-legal .btn{margin-top:28px}
+.footer-policy{display:flex;gap:20px;flex-wrap:wrap;font-size:11px;margin:18px 0;color:#bec9d0}
+.footer-policy a{text-decoration:underline;text-underline-offset:4px}
+.product-essentials{padding:75px 0;background:#f7f3ed}
+.product-essentials .shell{max-width:1150px}
+.product-essentials h2{font-size:clamp(34px,4vw,49px)}
+.product-essentials-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px}
+.product-essentials p{color:var(--muted);line-height:1.85}
+.product-essentials h3{font:24px var(--serif);color:var(--navy);margin:15px 0}
+.product-essentials ul{padding-left:19px;color:var(--muted);line-height:1.9;font-size:14px}
+@media(max-width:800px){.v10-baptism-inner,.product-essentials-grid{display:block}.v10-baptism .btn{margin-top:20px}.v10-guide-grid{grid-template-columns:1fr}.v10-guide{padding:65px 0}.q-advanced summary{flex-wrap:wrap;justify-content:flex-start}.q-advanced summary span{text-align:left;width:100%;padding-left:30px}.v10-legal{width:min(100% - 40px,930px)}}
+@media(prefers-reduced-motion:reduce){.category-photo img,.sector-card img{transition:none!important}}
