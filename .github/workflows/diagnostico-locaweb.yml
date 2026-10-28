@@ -25,6 +25,24 @@ jobs:
           host=ftp.ateliello1.hospedagemdesites.ws
           echo "Verificando porta 21 e certificado de $host"
           timeout 25 bash -c 'echo QUIT | openssl s_client -starttls ftp -connect "$1:21" -servername "$1" 2>&1' bash "$host" | grep -E 'subject=|issuer=|Verify return code|verify error|CONNECTED|Verification:' | head -20 || true
+      - name: Testar portas e resposta HTTP de configuração
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import socket
+          host='ftp.ateliello1.hospedagemdesites.ws'
+          for port in (21,22,80,443):
+              try:
+                  c=socket.create_connection((host,port),timeout=4)
+                  c.settimeout(3)
+                  if port==21:
+                      try: print('FTP saudação:',repr(c.recv(180)))
+                      except Exception as e: print('FTP conectado sem saudação:',type(e).__name__)
+                  else: print('TCP',port,'conexão estabelecida')
+                  c.close()
+              except Exception as e: print('TCP',port,'não conectou:',type(e).__name__,str(e)[:100])
+          PY
+          curl -sSI --connect-timeout 5 --max-time 8 http://ateliello.com.br/ | head -10 || true
       - name: Verificar HTTPS do domínio sem autenticação
         shell: bash
         run: |
