@@ -14,6 +14,9 @@ names = [
 "detalhe-bordado-claro.webp","bastidores-artesanais.webp","conceito-academias.webp",
 "hero-toalhas-reais.webp","conjunto-mesa-madeira.webp","detalhe-bordado-cinza.webp",
 ]
+import base64
+parts = [Path(f"assets-source/atlas-part-{i:02}.txt").read_text().strip() for i in range(1, 8)]
+Path("assets-source/atlas.webp").write_bytes(base64.b64decode("".join(parts), validate=True))
 atlas = Image.open("assets-source/atlas.webp").convert("RGB")
 w,h = atlas.size
 assert w % 6 == 0 and h % 4 == 0, "Atlas deve ter seis colunas e quatro linhas"
