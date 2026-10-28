@@ -204,3 +204,11 @@ a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible,te
 .footer .footer-brand img{width:225px;max-width:100%;height:auto;aspect-ratio:320/108;object-fit:contain;filter:invert(1) grayscale(1);mix-blend-mode:screen}
 @media(max-width:1100px){.site-head .brand img{width:200px}}
 @media(max-width:650px){.site-head .brand img{width:176px}.footer .footer-brand img{width:200px}}
+
+/* Ateliello V13 — assistência discreta e acessível */
+.at-assistant-toggle{min-height:59px;outline-offset:4px}
+.at-assistant-toggle:focus-visible,.at-assistant-dialog button:focus-visible,.at-assistant-dialog input:focus-visible,.at-assistant-dialog a:focus-visible{outline:3px solid #bd9368;outline-offset:3px}
+.at-assistant-suggestions button:hover,.at-assistant-suggestions a:hover{background:#f5efe6;border-color:#a88966}
+.at-assistant-dialog{max-height:calc(100dvh - 120px)}
+.at-assistant-message{overflow-wrap:anywhere}
+@media(max-width:460px){.at-assistant-dialog{height:min(530px,calc(100dvh - 175px))}.at-assistant-head{padding:12px}.at-assistant-suggestions{max-height:120px}}

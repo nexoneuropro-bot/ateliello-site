@@ -44,28 +44,33 @@ let last="";
 function addLine(text,who){const p=document.createElement("p");p.className="at-assistant-message "+(who==="user"?"from-user":"from-ateliello");p.textContent=text;feed.append(p);feed.scrollTop=feed.scrollHeight;}
 const actions=[
 ["Uniformes para empresa","Preciso de uniformes para minha empresa"],
-["Tenho minha peça","Quero bordar uma peça que já tenho"],
-["Ajuda com tecidos","Qual tecido devo escolher?"],
-["Preços e prazos","Como funcionam preços e prazos?"]
+["Bordar minha peça","Quero bordar uma peça que já tenho"],
+["Presente personalizado","Quero um roupão ou uma toalha personalizada"],
+["Tecidos e prazos","Como escolher tecido e combinar prazo?"]
 ];
 function suggest(label,fn){const b=document.createElement("button");b.type="button";b.textContent=label;b.addEventListener("click",fn);suggestions.append(b);}
-function answer(q){const s=norm(q);
-if(/batismo|batizado/.test(s))return ["O modelo de referência da toalha de batismo custa R$ 25,90 por unidade. Podemos conversar sobre nome, desenho, tecido e prazo; essas escolhas podem alterar o orçamento.","toalhas-batismo-personalizadas.html"];
-if(/preco|valor|quanto custa|cobram|barato|orcamento/.test(s))return ["O valor depende do tecido, dimensões e pontos do bordado, quantidade e urgência. Cada pedido recebe uma proposta antes da produção. A toalha de batismo tem um modelo de referência por R$ 25,90.","orcamento.html"];
-if(/prazo|urgenc|amanha|dia|entrega|correria/.test(s))return ["O prazo é confirmado após avaliarmos a peça, a arte, a quantidade e a disponibilidade do tecido. Para urgências, verificamos a capacidade de produção antes de assumir uma data.","orcamento.html"];
-if(/tecido|pique|piquet|algodao|linho|brim|felpudo|malha/.test(s))return ["A escolha depende do uso: piquet é comum em polos, brim em aventais e felpudo em toalhas. Analisamos a trama e a posição de cada bordado; você também pode trazer o próprio material.","tecidos-personalizacao.html"];
-if(/minha peca|tenho uma peca|tecido proprio|peca propria|ja tenho|enviar minha|meu tecido/.test(s))return ["Sim, avaliamos bordados em peças e tecidos do cliente. Envie uma foto e a referência do bordado; nossa equipe verifica se a composição, o acesso e a trama permitem a aplicação.","bordado-em-pecas-do-cliente.html"];
-if(/clinica|medic|jaleco|dentist|hospital|scrub|saude/.test(s))return ["Para clínicas, orientamos jalecos, scrubs e peças com nome, especialidade ou logo. Para equipes, padronizamos a arte, a posição do bordado e a grade de tamanhos por lote.","uniformes-clinicas.html"];
-if(/empresa|uniform|polo|camiseta|equipe|atacado|lote|empreendedor/.test(s))return ["Para empresas, trabalhamos com produção organizada por lotes. Você informa os tipos de peça, quantidades, tamanhos e logo; avaliamos tecidos e prazos. Também atendemos pequenos negócios.","uniformes-personalizados.html"];
-if(/avental|food|cozinha|chef|gastronomia|restaurante/.test(s))return ["Podemos desenvolver aventais, dólmãs e peças bordadas para gastronomia e food trucks, avaliando tecido, uso, posição do logo e quantidade.","uniformes-gastronomia.html"];
-if(/casamento|noiva|presente|roupao|toalha|enxoval|kit/.test(s))return ["Roupões, toalhas e kits podem receber nomes, iniciais e monogramas. Conte a ocasião e o tipo de tecido que imagina; ajudamos a organizar as escolhas.","toalhas-roupoes-personalizados.html"];
-if(/dj|academia|personal|esporte|fitness|musica/.test(s))return ["Personalizamos peças para DJs, academias, personal trainers e eventos. A viabilidade depende do tecido e da área disponível; envie seu nome, logo ou referência para avaliação.","bordados-academias-personal.html"];
-if(/retirada|local|endereco|osasco|sao paulo/.test(s))return ["Somos um e-commerce com atendimento online. O envio é combinado conforme destino e modalidade disponível; a retirada programada pode ser consultada após a confirmação do pedido.","contato.html"];
-return ["Cada história começa com uma conversa. Conte qual peça imagina bordar, para quem é e quantas unidades deseja. Se tiver uma foto, logo ou tecido próprio, podemos avaliar tudo pelo WhatsApp.","orcamento.html"];
+function answer(q){
+const s=norm(q);
+const amount=s.match(/\b(\d{1,4})\s*(?:pecas?|unidades?|polos?|jalecos?|aventais?|camisetas?|toalhas?|roupoes?|bones?)\b/);
+const lot=amount?"Você mencionou "+Number(amount[1])+" unidades. ":"";
+if(/batismo|batizado/.test(s))return ["A toalha de batismo tem um modelo de referência por R$ 25,90/unidade. Nome, desenho, tecido e urgência podem alterar esse valor; conversamos sobre cada detalhe antes de confirmar.","toalhas-batismo-personalizadas.html"];
+if(/(pe[cç]a|tecido) (que )?(ja )?(tenho|comprei)|minha peca|meu tecido|peca propria|tecido proprio|ja tenho (uma|o)|enviar (minha|uma) (peca|roupa)|bordar (minha|uma) (roupa|peca)/.test(s))return ["Sim! Podemos avaliar bordados em roupas e tecidos que você já tem. Envie foto da peça e da referência desejada; verificamos trama, acesso à área e a viabilidade técnica antes de aceitar.","bordado-em-pecas-do-cliente.html"];
+if(/(prazo|urgenc|amanha|entrega|quanto tempo|dias?|semanas?|atraso|correria)/.test(s)&&!/academia/.test(s))return ["Prazo e entrega dependem do tecido disponível, da arte, da quantidade e da agenda de produção. Para pedidos urgentes, primeiro verificamos a viabilidade; a retirada, quando disponível, é agendada.","orcamento.html"];
+if(/(academia|personal trainer|fitness|muscula|treino|esporte)/.test(s))return ["Para academias e personal trainers, podemos avaliar camisetas, polos, bonés e toalhas com nome ou logotipo. O tecido adequado depende de conforto, uso e composição. "+lot+"Cada projeto é cotado individualmente.","bordados-academias-personal.html"];
+if(/(dj|musica|show|artista|evento musical)/.test(s))return ["Para DJs e artistas, é possível personalizar toalhas, bonés e outras peças com nome artístico ou logotipo. Vamos avaliar o tecido, a área do bordado e o acabamento da sua identidade.","bordados-djs-eventos.html"];
+if(/(food.?truck|avental|cozinha|chef|gastronomia|restaurante|cafeteria|confeitaria|barista)/.test(s))return ["Para gastronomia e food trucks, avaliamos aventais, dólmãs, polos e camisetas com a identidade do negócio. "+lot+"Você escolhe o contexto de uso; orientamos tecido, posição e a organização do lote.","uniformes-gastronomia.html"];
+if(/(clinica|consultorio|medic|jaleco|dentist|hospital|scrub|saude|nutricionista|enfermag)/.test(s))return ["Para clínicas e consultórios, trabalhamos com jalecos, scrubs e peças com nome, profissão ou logotipo. "+lot+"Em equipes, organizamos bordados, tamanhos e entregas por lotes. Tecidos e prazos são avaliados antes da confirmação.","uniformes-clinicas.html"];
+if(/(casamento|noiva|madrinha|enxoval|presentes?|roupao|toalhas?|kit|monograma|lembranca)/.test(s))return ["Roupões, toalhas e kits podem receber nomes, iniciais e monogramas. Se você já tem uma referência ou quer escolher o tecido com nossa ajuda, podemos conversar sobre opções e combinações.","toalhas-roupoes-personalizados.html"];
+if(/(tecido|piquet|pique|algodao|linho|brim|felpudo|malha|gramatura|qualidade)/.test(s))return ["A escolha do tecido acompanha o uso: piquet costuma funcionar bem em polos, brim em aventais, felpudo em toalhas. Não existe uma opção ideal para tudo; avaliamos trama, estrutura e dimensões do bordado. Você também pode fornecer a própria peça.","tecidos-personalizacao.html"];
+if(/(empresa|uniform|polo|camiseta|equipe|atacado|lote|empreendedor|funcionario)/.test(s))return ["Para empresas e pequenos negócios, organizamos a produção por lotes, a grade de tamanhos e a padronização do bordado. "+lot+"Podemos cotar o fornecimento das peças ou avaliar as suas, sempre após confirmar tecido, arte e prazo.","uniformes-personalizados.html"];
+if(/(preco|valor|quanto custa|cobram|desconto|orcamento|pagamento)/.test(s))return ["Cada orçamento considera tecido, tipo e dimensão do bordado, quantidade e urgência. Nossa equipe confirma o preço antes de produzir; a toalha de batismo possui um modelo de referência de R$ 25,90/unidade.","orcamento.html"];
+if(/(retirada|retirar|endereco|osasco|sao paulo|localiza|enviar|frete|correio)/.test(s))return ["A Ateliello é um e-commerce com atendimento online a partir de São Paulo. As entregas são combinadas conforme o destino. A retirada, quando viável, é programada após a confirmação do pedido.","contato.html"];
+if(/(logo|logotipo|desenho|foto|arte|arquivo|bordar nome|iniciais)/.test(s))return ["Você pode enviar uma foto, um desenho, suas iniciais ou o arquivo da marca pelo WhatsApp. Nossa equipe verifica a legibilidade, a posição do bordado e o material antes de confirmar a proposta.","bordados-personalizados.html"];
+return ["Uma peça única ou o uniforme de uma equipe: começamos entendendo sua ideia. Conte a peça, a quantidade e para quem ela será feita. O atendimento humano confirma tecidos, orçamento e prazo.","orcamento.html"];
 }
 function ask(q){last=clean(q);if(!last)return;addLine(last,"user");
 const [text,page]=answer(last);track("ateliello_assistant_topic",{destination:page});addLine(text,"bot");suggestions.replaceChildren();
-const a=document.createElement("a");a.href=page;a.textContent="Ver detalhes desta opção ↗";a.className="at-assistant-link";suggestions.append(a);
+const a=document.createElement("a");a.href=page;a.textContent="Ver opções e detalhes ↗";a.className="at-assistant-link";suggestions.append(a);
 suggest("Montar orçamento",()=>{location.href="orcamento.html"});
 wa.href="https://wa.me/551154441399?text="+encodeURIComponent("Olá, Ateliello Uniformes e Bordados! Vim pelo site. Gostaria de orientação sobre: "+last);
 }
