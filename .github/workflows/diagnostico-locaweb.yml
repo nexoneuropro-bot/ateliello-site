@@ -55,6 +55,24 @@ jobs:
               except Exception as e: print('TCP',port,'não conectou:',type(e).__name__,str(e)[:100])
           PY
           curl -sSI --connect-timeout 5 --max-time 8 http://ateliello.com.br/ | head -10 || true
+      - name: Verificar banner SSH SFTP sem autenticação
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import socket
+          host='ftp.ateliello1.hospedagemdesites.ws'
+          for port in (22,):
+            try:
+              with socket.create_connection((host,port),timeout=5) as c:
+                c.settimeout(4)
+                print('SSH:',repr(c.recv(180)))
+            except Exception as e: print('SSH não respondeu:',type(e).__name__,str(e)[:150])
+          PY
+          timeout 10 ssh-keyscan -T 5 -t ed25519,rsa ftp.ateliello1.hospedagemdesites.ws 2>&1 | cut -c 1-220 || true
+      - name: Inspecionar certificado HTTPS público
+        shell: bash
+        run: |
+          timeout 9 bash -c 'echo | openssl s_client -connect ateliello.com.br:443 -servername ateliello.com.br -showcerts 2>/dev/null' | openssl x509 -noout -subject -issuer -dates 2>&1 || true
       - name: Verificar HTTPS do domínio sem autenticação
         shell: bash
         run: |
