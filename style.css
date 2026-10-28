@@ -230,3 +230,50 @@ a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible,te
 @media(max-width:880px){.v14-quickquote-grid{grid-template-columns:1fr}.v14-quickquote-copy .text-link{margin-top:6px}}
 @media(max-width:560px){.v14-fast-fields{grid-template-columns:1fr}.v14-fast-form{padding:21px}.v14-fast-form .btn{width:100%;justify-content:center;text-align:center}}
 @media(prefers-reduced-motion:no-preference){.floating-wa{animation:at-v14-wa-nudge 1.1s ease 3s 1}@keyframes at-v14-wa-nudge{0%,100%{transform:translateY(0)}35%{transform:translateY(-5px)}70%{transform:translateY(0)}}}
+
+/* Ateliello — logotipo integrado à mesma superfície editorial do site.
+   Preserva o desenho metálico; harmoniza a base clara do arquivo com o cabeçalho/rodapé,
+   sem moldura, brilho adicional ou fundo retangular visível. */
+.site-head{
+  background:linear-gradient(110deg,rgba(250,248,244,.985) 0%,rgba(255,254,250,.985) 58%,rgba(251,249,245,.985) 100%);
+  border-bottom:1px solid rgba(183,155,121,.26);
+  box-shadow:0 6px 25px rgba(12,35,57,.035);
+}
+.site-head .nav-wrap{min-height:91px}
+.site-head .brand{flex-shrink:0;min-width:0;line-height:0;position:relative}
+.site-head .brand img{
+  display:block;width:228px;max-width:100%;height:auto;aspect-ratio:auto;object-fit:contain;
+  mix-blend-mode:multiply;
+  filter:saturate(.98) contrast(1.045);
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 5%,#000 95%,transparent 100%),
+     linear-gradient(180deg,transparent 0%,#000 7%,#000 93%,transparent 100%);
+  mask-image:linear-gradient(90deg,transparent 0%,#000 5%,#000 95%,transparent 100%),
+     linear-gradient(180deg,transparent 0%,#000 7%,#000 93%,transparent 100%);
+  -webkit-mask-composite:source-in;
+  mask-composite:intersect;
+}
+.footer{
+  background:linear-gradient(125deg,#faf7f1 0%,#f1eae0 100%);
+  border-top:1px solid #ded3c5;
+}
+.footer .footer-brand img{
+  display:block;width:225px;max-width:100%;height:auto;aspect-ratio:auto;
+  mix-blend-mode:multiply;
+  filter:saturate(.95) contrast(1.045);
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 5%,#000 95%,transparent 100%),
+     linear-gradient(180deg,transparent 0%,#000 7%,#000 93%,transparent 100%);
+  mask-image:linear-gradient(90deg,transparent 0%,#000 5%,#000 95%,transparent 100%),
+     linear-gradient(180deg,transparent 0%,#000 7%,#000 93%,transparent 100%);
+  -webkit-mask-composite:source-in;
+  mask-composite:intersect;
+}
+.footer .footer-brand p{color:var(--navy);font-weight:400}
+@media(max-width:1100px){
+  .site-head .brand img{width:188px}
+  .site-head .nav-wrap{min-height:83px}
+}
+@media(max-width:650px){
+  .site-head .brand img{width:172px}
+  .site-head .nav-wrap{min-height:74px}
+  .footer .footer-brand img{width:205px}
+}

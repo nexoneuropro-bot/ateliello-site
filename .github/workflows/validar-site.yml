@@ -14,4 +14,5 @@ jobs:
       - run: node --check app.js
       - run: node scripts/check_assistant.mjs
       - run: node scripts/check_campaign.mjs
+      - run: node scripts/check_brand.mjs
       - run: node --check app.js
