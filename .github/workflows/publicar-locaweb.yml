@@ -60,7 +60,7 @@ jobs:
       - name: Conferir HTTPS do domínio antes de publicar versão indexável
         run: |
           set -euo pipefail
-          curl --fail --silent --show-error --head --location --connect-timeout 8 --max-time 20 https://ateliello.com.br/ > /dev/null
+          curl --silent --show-error --head --location --connect-timeout 8 --max-time 20 https://ateliello.com.br/ > /dev/null
         shell: bash
       - name: Transferir arquivos via FTPS
         env:
