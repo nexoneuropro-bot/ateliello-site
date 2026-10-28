@@ -10,7 +10,7 @@ document.addEventListener('click',(e)=>{const link=e.target.closest('a[href]');i
 });
 const menu=$('.menu-toggle'),nav=$('.main-nav');
 const moreLinks=[['Uniformes','uniformes-personalizados.html','Produção para empresas'],['Bordados','bordado-em-pecas-do-cliente.html','Bordado na sua peça'],['Para você','toalhas-batismo-personalizadas.html','Toalha de batismo']];
-for(const [label,url,title] of moreLinks){const group=$('.menu-drop').find(el=>el.querySelector('button')?.textContent.includes(label));const panel=group?.querySelector('.drop-panel');if(panel&&!$('a',panel).some(a=>a.getAttribute('href')===url)){const a=document.createElement('a');a.href=url;a.textContent=title;panel.appendChild(a);}}
+for(const [label,url,title] of moreLinks){const group=$$('.menu-drop').find(el=>el.querySelector('button')?.textContent.includes(label));const panel=group?.querySelector('.drop-panel');if(panel&&!$('a',panel).some(a=>a.getAttribute('href')===url)){const a=document.createElement('a');a.href=url;a.textContent=title;panel.appendChild(a);}}
 menu?.addEventListener('click',()=>{let open=!nav.classList.contains('open');nav.classList.toggle('open',open);menu.setAttribute('aria-expanded',String(open));});
 $$('.menu-drop>button').forEach(b=>b.addEventListener('click',()=>{const p=b.parentElement,opened=p.classList.toggle('open');b.setAttribute('aria-expanded',String(opened));}));
 $$('.main-nav a').forEach(a=>a.addEventListener('click',()=>{nav?.classList.remove('open');menu?.setAttribute('aria-expanded','false');}));
@@ -21,6 +21,8 @@ const needle=$('.needle');if(needle&&!reduced&&matchMedia('(pointer:fine)').matc
 $$('[data-audience-filter]').forEach(b=>b.addEventListener('click',()=>{const category=b.dataset.audienceFilter;$$('[data-audience-filter]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));$$('.category-card').forEach(c=>{c.hidden=category!=='todos'&&c.dataset.audience!==category;});}));
 const fabrics={Algodão:'Algodão: toque natural e possibilidades variadas, com avaliação conforme trama e espessura.',Piquet:'Piquet: textura clássica de polos; a malha pede atenção à densidade e ao caimento do bordado.',Brim:'Brim: ideal para avaliar aventais e peças estruturadas, respeitando espessura e bolsos.',Felpudo:'Felpudo: toalhas e roupões exigem cuidado com o relevo para nomes e monogramas bem legíveis.'};
 $$('.swatches button').forEach(b=>b.addEventListener('click',()=>{ $$('.swatches button').forEach(x=>{x.classList.remove('active');x.setAttribute('aria-pressed',String(x===b));});b.classList.add('active');if($('#swatch-detail'))$('#swatch-detail').textContent=fabrics[b.dataset.fabric]||'Escolha de tecido sob avaliação.';}));
+/* Preserva a origem de campanhas desde a página de entrada. */
+try{const landing=new URLSearchParams(location.search);for(const key of ['utm_source','utm_medium','utm_campaign','utm_content']){const value=(landing.get(key)||'').slice(0,200);if(value)sessionStorage.setItem('ateliello_'+key,value);}}catch{}
 const builder=$('#quote-builder');if(!builder)return;
 const flow=$('#q-flow'),flowHelp=$('#q-flow-help'),advanced=$('#q-advanced');
 flow?.addEventListener('change',()=>{const corp=flow.value.startsWith('Empresa');if(flowHelp)flowHelp.textContent=corp?'Para empresas, podemos orientar sua grade, logotipo e tecidos e organizar o pedido em lote.':'Para pedidos pessoais, você pode trazer uma foto, seu tecido ou somente a ideia; os detalhes técnicos são opcionais.';if(advanced&&corp)advanced.open=true;});
