@@ -1,0 +1,58 @@
+name: Verificar site Ateliello publicado
+on:
+  push:
+    paths:
+      - '.github/workflows/verificar-locaweb-online.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  publico:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Testar dominio, paginas e recursos publicados
+        run: |
+          python3 - <<'PY'
+          import http.client, ssl
+          host='ateliello.com.br'
+          checks={
+            '/': [b'Ateliello',b'noindex,nofollow'],
+            '/robots.txt':[b'Disallow: /'],
+            '/app.js':[b'const $='],
+            '/style.css':[b'.site-head'],
+            '/assets/logo-ateliello-metalico.webp':[],
+            '/campanha-uniformes-empresas.html':[b'Uniformes para sua equipe',b'noindex,nofollow'],
+            '/campanha-jalecos-clinicas.html':[b'Jalecos e uniformes',b'noindex,nofollow'],
+            '/campanha-toalhas-presentes.html':[b'Um nome bordado',b'noindex,nofollow'],
+            '/orcamento.html':[b'Ateliello',b'noindex,nofollow'],
+            '/guias-bordado-personalizacao.html':[b'Ateliello',b'noindex,nofollow']
+          }
+          failed=[]
+          for path,needles in checks.items():
+            try:
+              c=http.client.HTTPConnection(host,80,timeout=12)
+              c.request('GET',path,headers={'User-Agent':'Ateliello-Release-QA/1.0'})
+              response=c.getresponse()
+              data=response.read(200000)
+              code=response.status
+              match=all(x.lower() in data.lower() for x in needles)
+              print(f'HTTP {code} {path} bytes={len(data)} markers={match}')
+              if code!=200 or not match: failed.append(path)
+              c.close()
+            except Exception as ex:
+              print(f'HTTP erro {path}: {type(ex).__name__}: {str(ex)[:150]}')
+              failed.append(path)
+          try:
+            c=http.client.HTTPSConnection(host,443,timeout=12,context=ssl.create_default_context())
+            c.request('GET','/')
+            response=c.getresponse()
+            print('HTTPS certificado validado:',response.status)
+            c.close()
+          except Exception as ex:
+            print(f'HTTPS certificado ainda pendente: {type(ex).__name__}: {str(ex)[:230]}')
+          print('PAGINAS_HTTP_VERIFICADAS=',len(checks)-len(failed),'/',len(checks))
+          if failed:
+            print('RECURSOS_A_CORRIGIR=',','.join(failed))
+            raise SystemExit(1)
+          PY
