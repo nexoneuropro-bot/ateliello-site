@@ -1,0 +1,73 @@
+name: Auditoria visual simulando correção sem alterar produção
+on:
+  push:
+    paths: ['.github/workflows/simular-correcao-visual.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  simular:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - run: |
+          python -m pip install --disable-pip-version-check playwright==1.56.0
+          python -m playwright install chromium
+      - run: |
+          mkdir -p simulacao
+          cat > /tmp/simular.py <<'PY'
+          import json
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as p:
+              browser=p.chromium.launch(headless=True,args=["--no-sandbox"])
+              stats={}
+              for mode,vp in [('desktop',{'width':1440,'height':900}),('mobile',{'width':390,'height':844})]:
+                  page=browser.new_page(viewport=vp,is_mobile=(mode=='mobile'),has_touch=(mode=='mobile'))
+                  errors=[]
+                  page.on('pageerror',lambda e:errors.append(str(e)))
+                  def script_route(route):
+                      res=route.fetch()
+                      body=res.body().decode('utf8')
+                      assert "$('a',panel).some" in body
+                      body=body.replace("$('a',panel).some","$$('a',panel).some")
+                      route.fulfill(response=res,body=body)
+                  page.route('**/app.js',script_route)
+                  page.goto('https://ateliello.com.br/',wait_until='networkidle',timeout=40000)
+                  page.wait_for_timeout(1100)
+                  page.screenshot(path=f'simulacao/{mode}-apos-corrigir-js.png')
+                  # Inspect once JavaScript works, actual overlays and assistant controls
+                  mobileMenuOpen=None
+                  if mode=='mobile':
+                      page.locator('.menu-toggle').click()
+                      page.wait_for_timeout(150)
+                      mobileMenuOpen=page.locator('.main-nav').evaluate('(e)=>getComputedStyle(e).display')
+                      page.screenshot(path='simulacao/mobile-menu-funcional.png')
+                      page.locator('.menu-toggle').click()
+                  assistantBtn=page.locator('.at-assistant-toggle')
+                  if assistantBtn.count():
+                      assistantBtn.click(timeout=3000)
+                      page.wait_for_timeout(230)
+                      page.screenshot(path=f'simulacao/{mode}-assistente.png')
+                  stats[mode]={'errors':errors,'assistantCount':assistantBtn.count(),'mobileMenuDisplay':mobileMenuOpen,'heroOpacity':page.locator('.hero-copy').evaluate('(e)=>getComputedStyle(e).opacity'),'revealVisible':page.locator('.reveal.visible').count()}
+                  # Compare logo with official original transparent PNG (visual test only).
+                  page.evaluate("""() => {
+                    const img=document.querySelector('.brand img');
+                    img.src='/assets/logo-ateliello-com-assinatura.png';
+                    img.style.mixBlendMode='normal';
+                    img.style.maskImage='none';
+                    img.style.webkitMaskImage='none';
+                    img.style.filter='none';
+                  }""")
+                  page.wait_for_timeout(500)
+                  page.screenshot(path=f'simulacao/{mode}-logo-original-transparente.png')
+                  page.close()
+              print(json.dumps(stats,ensure_ascii=False,indent=2))
+              browser.close()
+          with open('simulacao/resultado.json','w') as f:json.dump(stats,f,ensure_ascii=False,indent=2)
+          PY
+          python /tmp/simular.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ateliello-simulacao-corrigida
+          path: simulacao/
+          retention-days: 7
