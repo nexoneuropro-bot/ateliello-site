@@ -24,8 +24,8 @@ jobs:
       - name: Conferir autorização da publicação
         env:
           CONFIRMACAO: ${{ inputs.confirmacao }}
-          SITE_DOMAIN: ${{ vars.ATELIELLO_DOMAIN }}
-          FTPS_PATH: ${{ vars.LOCAWEB_FTPS_REMOTE_DIR }}
+          SITE_DOMAIN: ateliello.com.br
+          FTPS_PATH: public_html
         run: |
           set -euo pipefail
           test "$CONFIRMACAO" = "PUBLICAR ATELIELLO"
@@ -57,10 +57,15 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends lftp
+      - name: Conferir HTTPS do domínio antes de publicar versão indexável
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --head --location --connect-timeout 8 --max-time 20 https://ateliello.com.br/ > /dev/null
+        shell: bash
       - name: Transferir arquivos via FTPS
         env:
-          LOCAWEB_FTPS_HOST: ${{ secrets.LOCAWEB_FTPS_HOST }}
-          LOCAWEB_FTPS_USER: ${{ secrets.LOCAWEB_FTPS_USER }}
+          LOCAWEB_FTPS_HOST: ftp.ateliello1.hospedagemdesites.ws
+          LOCAWEB_FTPS_USER: ateliello1
           LOCAWEB_FTPS_PASSWORD: ${{ secrets.LOCAWEB_FTPS_PASSWORD }}
-          LOCAWEB_FTPS_REMOTE_DIR: ${{ vars.LOCAWEB_FTPS_REMOTE_DIR }}
+          LOCAWEB_FTPS_REMOTE_DIR: public_html
         run: bash scripts/publicar_locaweb.sh

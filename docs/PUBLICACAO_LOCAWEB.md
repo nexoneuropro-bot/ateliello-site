@@ -7,9 +7,9 @@
 - O workflow não é executado automaticamente; ele exige confirmação e acesso seguro.
 
 ## Dados que faltam (configurar **dentro do GitHub**, nunca compartilhar no chat)
-1. Abra `https://github.com/nexoneuropro-bot/ateliello-site/settings/environments` e crie ambiente `locaweb-producao`; configure revisores aprovadores e restrição à branch `main`.
-2. Nesse ambiente crie os três **secrets** `LOCAWEB_FTPS_HOST`, `LOCAWEB_FTPS_USER`, `LOCAWEB_FTPS_PASSWORD` com os dados de **Arquivos e FTP** do painel Locaweb.
-3. Ainda no ambiente, crie as **variables** `ATELIELLO_DOMAIN` = `ateliello.com.br` e `LOCAWEB_FTPS_REMOTE_DIR` com o caminho exato até o `public_html` do domínio. Verifique antes se o produto é Hospedagem Linux e se suporta FTPS explícito TLS.
+1. Confirme na Locaweb: hospedagem Linux Go, host alternativo `ftp.ateliello1.hospedagemdesites.ws`, usuário `ateliello1`, pasta de publicação `public_html`, domínio `ateliello.com.br`. Esses dados não secretos já estão preenchidos no workflow conforme captura da conta.
+2. Abra `https://github.com/nexoneuropro-bot/ateliello-site/settings/secrets/actions/new` e cadastre apenas **um segredo** com o nome `LOCAWEB_FTPS_PASSWORD` e a senha FTP do painel. A senha não deve ser escrita no chat, no repositório ou em comentários.
+3. Opcionalmente, crie ambiente `locaweb-producao` em `Settings > Environments` para exigir aprovação de publicação por um responsável. O workflow já usa esse nome; a senha cadastrada como segredo do repositório fica disponível ao workflow.
 4. Faça backup do conteúdo atualmente hospedado. Confirme domínio cadastrado, DNS e certificado HTTPS. Não substitua registros MX existentes sem conferir o e-mail.
 5. No **Painel de E-mail Locaweb**, crie `contato@ateliello.com.br` e configure registros MX, SPF, DKIM e DMARC fornecidos pela Locaweb; teste **envio e recebimento**. Não há API autorizada para criar essa conta neste chat.
 6. Acesse `https://github.com/nexoneuropro-bot/ateliello-site/actions/workflows/publicar-locaweb.yml`, clique **Run workflow**, insira `PUBLICAR ATELIELLO` e marque o e-mail como verificado somente após o teste.
@@ -23,3 +23,6 @@
 - Se o produto Locaweb usar Windows/IIS, não use as regras `.htaccess` geradas para Linux/Apache.
 
 Documentação Locaweb: https://www.locaweb.com.br/ajuda/wiki/como-criar-site-na-locaweb/ e https://www.locaweb.com.br/ajuda/wiki/como-configurar-dominio-painel-email-locaweb/
+
+## Atenção: verificação de segurança
+O workflow recusa o envio da versão **indexável** quando o HTTPS de `https://ateliello.com.br/` não responde com certificado válido. A configuração do domínio e SSL precisa estar concluída antes da publicação. A conexão FTPS usa TLS explícito; caso o certificado fornecido pela hospedagem não seja reconhecido com o hostname alternativo, não se deve desligar sua validação sem um método de autenticação equivalente.
