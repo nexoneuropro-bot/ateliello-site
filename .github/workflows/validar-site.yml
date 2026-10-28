@@ -17,4 +17,5 @@ jobs:
       - run: node scripts/check_brand.mjs
       - run: bash -n scripts/publicar_locaweb.sh
       - run: python -m py_compile scripts/publicar_locaweb_sftp.py
+      - run: python -m py_compile scripts/publicar_locaweb_go_ftp.py
       - run: node --check app.js

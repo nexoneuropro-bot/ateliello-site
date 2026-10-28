@@ -1,4 +1,4 @@
-name: Publicar Ateliello na Locaweb
+name: Publicar Ateliello na Locaweb GO
 on:
   push:
     branches: [main]
@@ -7,11 +7,11 @@ on:
   workflow_dispatch:
     inputs:
       confirmacao:
-        description: "Digite PUBLICAR ATELIELLO para autorizar o upload"
+        description: "Digite PUBLICAR ATELIELLO para autorizar"
         required: true
         type: string
       modo:
-        description: "Prévia bloqueia Google; produção libera SEO após SSL válido"
+        description: "Prévia bloqueia Google; produção libera SEO após HTTPS válido"
         required: true
         type: choice
         default: previa
@@ -19,7 +19,7 @@ on:
           - previa
           - producao
       email_verificado:
-        description: "O e-mail contato@ateliello.com.br foi testado para envio e recebimento?"
+        description: "A caixa contato@ateliello.com.br já foi testada?"
         required: true
         default: false
         type: boolean
@@ -34,13 +34,11 @@ jobs:
     environment: locaweb-producao
     timeout-minutes: 15
     steps:
-      - name: Confirmar publicação
+      - name: Confirmar autorização manual
         if: ${{ github.event_name == 'workflow_dispatch' }}
         env:
           CONFIRMACAO: ${{ inputs.confirmacao }}
-        run: |
-          set -euo pipefail
-          test "$CONFIRMACAO" = "PUBLICAR ATELIELLO"
+        run: test "$CONFIRMACAO" = "PUBLICAR ATELIELLO"
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           persist-credentials: false
@@ -50,15 +48,15 @@ jobs:
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: '3.12'
-      - name: Validar código e páginas
+      - name: Validar site
         run: |
           python scripts/check_site.py
           node --check app.js
           node scripts/check_assistant.mjs
           node scripts/check_campaign.mjs
           node scripts/check_brand.mjs
-          python -m py_compile scripts/publicar_locaweb_sftp.py
-      - name: Gerar e conferir pacote
+          python -m py_compile scripts/publicar_locaweb_go_ftp.py
+      - name: Preparar somente arquivos públicos
         env:
           DEPLOY_MODE: ${{ github.event_name == 'push' && 'previa' || inputs.modo }}
           EMAIL_VERIFIED: ${{ github.event_name == 'workflow_dispatch' && inputs.email_verificado == true && 'yes' || 'no' }}
@@ -72,14 +70,11 @@ jobs:
             node scripts/build_locaweb.mjs
             node scripts/check_release.mjs
           fi
-      - name: Verificar HTTPS válido antes da liberação ao Google
+      - name: Exigir HTTPS válido para indexação de produção
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.modo == 'producao' }}
-        run: |
-          curl --silent --show-error --head --location --connect-timeout 8 --max-time 20 https://ateliello.com.br/ > /dev/null
-      - name: Preparar cliente SFTP criptografado
-        run: python -m pip install --disable-pip-version-check paramiko==3.5.1
-      - name: Transferir arquivos com verificação de host SSH
+        run: curl --silent --show-error --head --location --connect-timeout 8 --max-time 20 https://ateliello.com.br/ > /dev/null
+      - name: Transferir arquivos para public_html (FTP GO)
         env:
           DEPLOY_MODE: ${{ github.event_name == 'push' && 'previa' || inputs.modo }}
           LOCAWEB_FTPS_PASSWORD: ${{ secrets.LOCAWEB_FTPS_PASSWORD }}
-        run: python scripts/publicar_locaweb_sftp.py
+        run: python scripts/publicar_locaweb_go_ftp.py
