@@ -1,0 +1,31 @@
+name: Diagnosticar conexão pública Locaweb
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/diagnostico-locaweb.yml'
+permissions:
+  contents: read
+jobs:
+  verificar-sem-credenciais:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Conferir DNS público
+        shell: bash
+        run: |
+          for host in ateliello.com.br www.ateliello.com.br ftp.ateliello.com.br ftp.ateliello1.hospedagemdesites.ws; do
+            echo "::group::DNS $host"
+            getent ahostsv4 "$host" | head -3 || true
+            echo "::endgroup::"
+          done
+      - name: Inspecionar handshake FTPS explícito sem autenticação
+        shell: bash
+        run: |
+          host=ftp.ateliello1.hospedagemdesites.ws
+          echo "Verificando porta 21 e certificado de $host"
+          timeout 25 bash -c 'echo QUIT | openssl s_client -starttls ftp -connect "$1:21" -servername "$1" 2>&1' bash "$host" | grep -E 'subject=|issuer=|Verify return code|verify error|CONNECTED|Verification:' | head -20 || true
+      - name: Verificar HTTPS do domínio sem autenticação
+        shell: bash
+        run: |
+          curl -sIL --connect-timeout 8 --max-time 20 -o /dev/null -w 'HTTPS resposta=%{http_code}, IP=%{remote_ip}, redirecionamentos=%{num_redirects}\n' https://ateliello.com.br/ || true
