@@ -7,3 +7,6 @@ Nova tentativa autorizada pelo cliente após confirmação do suporte: plano GO 
 Método: FTP convencional documentado pela Locaweb.
 Momento: 2026-10-28 12:12 America/Sao_Paulo.
 Objetivo: publicar prévia sem indexação e testar no domínio.
+
+Reexecução autorizada pelo cliente após redefinir a senha FTP e atualizar LOCAWEB_FTPS_PASSWORD no GitHub.
+Objetivo: publicar somente a prévia no public_html, sem indexação de buscadores.
