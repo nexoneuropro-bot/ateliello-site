@@ -29,3 +29,20 @@ jobs:
           name: Ateliello_PREVIA_Locaweb
           path: Ateliello_PREVIA_Locaweb.zip
           retention-days: 14
+      - name: Gerar candidato de produção SEO sem publicar
+        env:
+          RELEASE_APPROVED: "yes"
+          SITE_URL: https://ateliello.com.br
+        run: node scripts/build_locaweb.mjs --production
+      - name: Validar SEO do candidato de produção
+        env:
+          SITE_URL: https://ateliello.com.br
+        run: node scripts/check_release.mjs --production
+      - name: Compactar candidato de produção
+        run: cd dist-locaweb && zip -q -r ../Ateliello_PRODUCAO_CANDIDATA.zip .
+      - name: Guardar versão candidata para transferência aprovada
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: Ateliello_PRODUCAO_CANDIDATA_SEO_NAO_PUBLICADA
+          path: Ateliello_PRODUCAO_CANDIDATA.zip
+          retention-days: 14
