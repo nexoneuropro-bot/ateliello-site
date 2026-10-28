@@ -10,7 +10,7 @@
 ## Passos curtos sem compartilhar senha no chat
 1. Locaweb: **Configurações > Segurança > Habilitar SSH**. A Locaweb informa que fica habilitado por 3 horas e pode ser reativado depois.
 2. GitHub: abra `https://github.com/nexoneuropro-bot/ateliello-site/settings/secrets/actions/new`. Cadastre **somente** o segredo `LOCAWEB_FTPS_PASSWORD` com sua senha do FTP. A mesma senha costuma ser usada para autenticação SSH do plano Linux.
-3. GitHub Actions: `https://github.com/nexoneuropro-bot/ateliello-site/actions/workflows/publicar-locaweb.yml`. Execute manualmente com texto `PUBLICAR ATELIELLO`, modo `previa`. Isso publica os arquivos **com Google bloqueado**, enquanto o SSL é regularizado.
+3. Assim que o segredo estiver salvo e o SSH habilitado, o assistente pode disparar a **prévia com Google bloqueado** por uma alteração deliberada no arquivo `.github/solicitar-publicacao-locaweb.txt`. Alternativamente, execute manualmente a ação `https://github.com/nexoneuropro-bot/ateliello-site/actions/workflows/publicar-locaweb.yml`, com texto `PUBLICAR ATELIELLO` e modo `previa`.
 4. Locaweb: na aba **Domínios**, em `ateliello.com.br`, escolha **Emitir Let’s Encrypt** (ou via Administrar Site > Informações de domínio) e confira certificado no domínio. A Locaweb pode levar algumas horas para finalizar a emissão.
 5. Depois de testar home, fotos, páginas, orçamento, assistente e WhatsApp via HTTPS, execute a mesma publicação em modo `producao`. Somente esse modo cria `sitemap.xml`, `robots.txt` público e tags indexáveis.
 6. O e-mail já foi criado pelo responsável; marque `email_verificado` somente quando envio e recebimento forem testados. Não alterar MX.
