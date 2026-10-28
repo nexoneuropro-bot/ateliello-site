@@ -23,6 +23,57 @@ const fabrics={Algodão:'Algodão: toque natural e possibilidades variadas, com 
 $$('.swatches button').forEach(b=>b.addEventListener('click',()=>{ $$('.swatches button').forEach(x=>{x.classList.remove('active');x.setAttribute('aria-pressed',String(x===b));});b.classList.add('active');if($('#swatch-detail'))$('#swatch-detail').textContent=fabrics[b.dataset.fabric]||'Escolha de tecido sob avaliação.';}));
 /* Preserva a origem de campanhas desde a página de entrada. */
 try{const landing=new URLSearchParams(location.search);for(const key of ['utm_source','utm_medium','utm_campaign','utm_content']){const value=(landing.get(key)||'').slice(0,200);if(value)sessionStorage.setItem('ateliello_'+key,value);}}catch{}
+
+/* Concierge Ateliello: assistente de orientação local, sem IA generativa ou envio automático. */
+(function(){
+const box=document.createElement("aside");box.className="at-assistant";box.setAttribute("aria-label","Assistente de atendimento Ateliello");
+box.innerHTML=[
+"<button class='at-assistant-toggle' type='button' aria-controls='at-assistant-dialog' aria-expanded='false'><span class='at-assistant-logo'>✳</span><span><strong>Posso ajudar?</strong><small>Seu ateliê está por aqui</small></span><b aria-hidden='true'>↗</b></button>",
+"<section class='at-assistant-dialog' id='at-assistant-dialog' aria-label='Conversa com a Ateliello' hidden>",
+"<div class='at-assistant-head'><span class='at-assistant-avatar'>A</span><span><strong>Assistente Ateliello</strong><small>Orientação inicial · atendimento online</small></span><button class='at-assistant-close' type='button' aria-label='Fechar conversa'>×</button></div>",
+"<div class='at-assistant-messages' role='log' aria-live='polite'></div><div class='at-assistant-suggestions'></div>",
+"<form class='at-assistant-form'><label class='sr-only' for='at-assistant-input'>Sua pergunta</label><input id='at-assistant-input' type='text' placeholder='O que você imagina bordar?' maxlength='420' autocomplete='off' required><button type='submit' aria-label='Enviar pergunta'>➜</button></form>",
+"<p class='at-assistant-note'>Respostas automáticas para orientar. Nossa equipe confirma tecidos, valores e prazos.</p>",
+"<a class='at-assistant-wa' target='_blank' rel='noopener noreferrer' href='https://wa.me/551154441399'>Conversar com uma pessoa <strong>WhatsApp ↗</strong></a></section>"
+].join("");
+document.body.append(box);
+const toggle=box.querySelector(".at-assistant-toggle"),dialog=box.querySelector(".at-assistant-dialog"),close=box.querySelector(".at-assistant-close"),feed=box.querySelector(".at-assistant-messages"),suggestions=box.querySelector(".at-assistant-suggestions"),form=box.querySelector(".at-assistant-form"),input=box.querySelector("input"),wa=box.querySelector(".at-assistant-wa");
+const clean=t=>String(t||"").trim().slice(0,420);
+const norm=t=>clean(t).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+let last="";
+function addLine(text,who){const p=document.createElement("p");p.className="at-assistant-message "+(who==="user"?"from-user":"from-ateliello");p.textContent=text;feed.append(p);feed.scrollTop=feed.scrollHeight;}
+const actions=[
+["Uniformes para empresa","Preciso de uniformes para minha empresa"],
+["Tenho minha peça","Quero bordar uma peça que já tenho"],
+["Ajuda com tecidos","Qual tecido devo escolher?"],
+["Preços e prazos","Como funcionam preços e prazos?"]
+];
+function suggest(label,fn){const b=document.createElement("button");b.type="button";b.textContent=label;b.addEventListener("click",fn);suggestions.append(b);}
+function answer(q){const s=norm(q);
+if(/batismo|batizado/.test(s))return ["O modelo de referência da toalha de batismo custa R$ 25,90 por unidade. Podemos conversar sobre nome, desenho, tecido e prazo; essas escolhas podem alterar o orçamento.","toalhas-batismo-personalizadas.html"];
+if(/preco|valor|quanto custa|cobram|barato|orcamento/.test(s))return ["O valor depende do tecido, dimensões e pontos do bordado, quantidade e urgência. Cada pedido recebe uma proposta antes da produção. A toalha de batismo tem um modelo de referência por R$ 25,90.","orcamento.html"];
+if(/prazo|urgenc|amanha|dia|entrega|correria/.test(s))return ["O prazo é confirmado após avaliarmos a peça, a arte, a quantidade e a disponibilidade do tecido. Para urgências, verificamos a capacidade de produção antes de assumir uma data.","orcamento.html"];
+if(/tecido|pique|piquet|algodao|linho|brim|felpudo|malha/.test(s))return ["A escolha depende do uso: piquet é comum em polos, brim em aventais e felpudo em toalhas. Analisamos a trama e a posição de cada bordado; você também pode trazer o próprio material.","tecidos-personalizacao.html"];
+if(/minha peca|tenho uma peca|tecido proprio|peca propria|ja tenho|enviar minha|meu tecido/.test(s))return ["Sim, avaliamos bordados em peças e tecidos do cliente. Envie uma foto e a referência do bordado; nossa equipe verifica se a composição, o acesso e a trama permitem a aplicação.","bordado-em-pecas-do-cliente.html"];
+if(/clinica|medic|jaleco|dentist|hospital|scrub|saude/.test(s))return ["Para clínicas, orientamos jalecos, scrubs e peças com nome, especialidade ou logo. Para equipes, padronizamos a arte, a posição do bordado e a grade de tamanhos por lote.","uniformes-clinicas.html"];
+if(/empresa|uniform|polo|camiseta|equipe|atacado|lote|empreendedor/.test(s))return ["Para empresas, trabalhamos com produção organizada por lotes. Você informa os tipos de peça, quantidades, tamanhos e logo; avaliamos tecidos e prazos. Também atendemos pequenos negócios.","uniformes-personalizados.html"];
+if(/avental|food|cozinha|chef|gastronomia|restaurante/.test(s))return ["Podemos desenvolver aventais, dólmãs e peças bordadas para gastronomia e food trucks, avaliando tecido, uso, posição do logo e quantidade.","uniformes-gastronomia.html"];
+if(/casamento|noiva|presente|roupao|toalha|enxoval|kit/.test(s))return ["Roupões, toalhas e kits podem receber nomes, iniciais e monogramas. Conte a ocasião e o tipo de tecido que imagina; ajudamos a organizar as escolhas.","toalhas-roupoes-personalizados.html"];
+if(/dj|academia|personal|esporte|fitness|musica/.test(s))return ["Personalizamos peças para DJs, academias, personal trainers e eventos. A viabilidade depende do tecido e da área disponível; envie seu nome, logo ou referência para avaliação.","bordados-academias-personal.html"];
+if(/retirada|local|endereco|osasco|sao paulo/.test(s))return ["Somos um e-commerce com atendimento online. O envio é combinado conforme destino e modalidade disponível; a retirada programada pode ser consultada após a confirmação do pedido.","contato.html"];
+return ["Cada história começa com uma conversa. Conte qual peça imagina bordar, para quem é e quantas unidades deseja. Se tiver uma foto, logo ou tecido próprio, podemos avaliar tudo pelo WhatsApp.","orcamento.html"];
+}
+function ask(q){last=clean(q);if(!last)return;addLine(last,"user");
+const [text,page]=answer(last);addLine(text,"bot");suggestions.replaceChildren();
+const a=document.createElement("a");a.href=page;a.textContent="Ver detalhes desta opção ↗";a.className="at-assistant-link";suggestions.append(a);
+suggest("Montar orçamento",()=>{location.href="orcamento.html"});
+wa.href="https://wa.me/551154441399?text="+encodeURIComponent("Olá, Ateliello Uniformes e Bordados! Vim pelo site. Gostaria de orientação sobre: "+last);
+}
+function setOpen(v){dialog.hidden=!v;toggle.setAttribute("aria-expanded",String(v));if(v){if(!feed.childElementCount){addLine("Olá! ✨ Posso ajudar você a encontrar uma peça, escolher tecidos ou preparar um orçamento. O que gostaria de personalizar?","bot");actions.forEach(([label,q])=>suggest(label,()=>ask(q)));}input.focus();}else toggle.focus();}
+toggle.addEventListener("click",()=>setOpen(dialog.hidden));close.addEventListener("click",()=>setOpen(false));
+form.addEventListener("submit",e=>{e.preventDefault();const q=input.value;input.value="";ask(q)});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!dialog.hidden)setOpen(false)});
+})();
 const builder=$('#quote-builder');if(!builder)return;
 const flow=$('#q-flow'),flowHelp=$('#q-flow-help'),advanced=$('#q-advanced');
 flow?.addEventListener('change',()=>{const corp=flow.value.startsWith('Empresa');if(flowHelp)flowHelp.textContent=corp?'Para empresas, podemos orientar sua grade, logotipo e tecidos e organizar o pedido em lote.':'Para pedidos pessoais, você pode trazer uma foto, seu tecido ou somente a ideia; os detalhes técnicos são opcionais.';if(advanced&&corp)advanced.open=true;});
