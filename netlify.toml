@@ -1,0 +1,4 @@
+[build]
+  publish = "."
+
+# Página de demonstração; mantém-se fora dos buscadores até a aprovação.
