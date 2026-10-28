@@ -79,6 +79,33 @@ toggle.addEventListener("click",()=>setOpen(dialog.hidden));close.addEventListen
 form.addEventListener("submit",e=>{e.preventDefault();const q=input.value;input.value="";ask(q)});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!dialog.hidden)setOpen(false)});
 })();
+
+/* Consulta comercial direta nas páginas de campanha: não envia dados sem ação do visitante. */
+$$('form[data-fastquote]').forEach(form=>{
+ form.addEventListener('submit',event=>{
+  event.preventDefault();
+  if(!form.reportValidity())return;
+  const piece=form.elements.namedItem('piece')?.value?.trim()||'';
+  const qty=Number(form.elements.namedItem('qty')?.value);
+  if(!piece||!Number.isInteger(qty)||qty<1||qty>10000)return;
+  const supply=form.elements.namedItem('supply')?.value||'Preciso de orientação';
+  const deadline=form.elements.namedItem('deadline')?.value||'Sem data definida';
+  const context=form.dataset.context||'Personalização';
+  const source=form.dataset.source||'site';
+  const sourceCampaign=(()=>{try{return sessionStorage.getItem('ateliello_utm_campaign')||''}catch{return ''}})();
+  const msg=['Olá, Ateliello Uniformes e Bordados! Gostaria de uma orientação e orçamento.',
+    'Interesse: '+context,'Peça: '+piece,'Quantidade: '+qty,
+    'Fornecimento: '+supply,'Prazo desejado: '+deadline,
+    'Origem: página '+source+(sourceCampaign?' / '+sourceCampaign:''),
+    'Posso enviar minha referência ou logotipo nesta conversa?'].join('\n');
+  track('ateliello_fastquote_whatsapp_click',{page:source,piece,quantity:qty});
+  const a=document.createElement('a');a.href='https://wa.me/551154441399?text='+encodeURIComponent(msg);
+  a.target='_blank';a.rel='noopener noreferrer';document.body.appendChild(a);a.click();a.remove();
+  const status=form.querySelector('.v14-fast-status');
+  if(status)status.textContent='A conversa foi preparada. Confira e envie a mensagem no WhatsApp.';
+ });
+});
+
 const builder=$('#quote-builder');if(!builder)return;
 const flow=$('#q-flow'),flowHelp=$('#q-flow-help'),advanced=$('#q-advanced');
 flow?.addEventListener('change',()=>{const corp=flow.value.startsWith('Empresa');if(flowHelp)flowHelp.textContent=corp?'Para empresas, podemos orientar sua grade, logotipo e tecidos e organizar o pedido em lote.':'Para pedidos pessoais, você pode trazer uma foto, seu tecido ou somente a ideia; os detalhes técnicos são opcionais.';if(advanced&&corp)advanced.open=true;});

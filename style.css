@@ -212,3 +212,21 @@ a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible,te
 .at-assistant-dialog{max-height:calc(100dvh - 120px)}
 .at-assistant-message{overflow-wrap:anywhere}
 @media(max-width:460px){.at-assistant-dialog{height:min(530px,calc(100dvh - 175px))}.at-assistant-head{padding:12px}.at-assistant-suggestions{max-height:120px}}
+
+/* V14 — consulta de baixa fricção nas páginas de campanha */
+.v14-quickquote{padding:clamp(38px,5vw,72px) 0;background:#f4eee5;border-block:1px solid #dfd4c5}
+.v14-quickquote-grid{display:grid;grid-template-columns:minmax(0,.88fr) minmax(0,1.12fr);gap:clamp(24px,5vw,90px);align-items:center}
+.v14-quickquote-copy h2{font:clamp(34px,3.6vw,50px)/1.19 var(--serif);color:var(--navy);margin:15px 0 18px;letter-spacing:-.02em}
+.v14-quickquote-copy p{color:var(--muted);font-size:14px;line-height:1.85;max-width:510px}
+.v14-quickquote-copy .text-link{display:inline-block;margin-top:16px;font-size:13px}
+.v14-fast-form{background:#fffefa;border:1px solid #dfd4c5;border-radius:9px;padding:clamp(22px,3vw,34px);box-shadow:0 18px 55px rgba(12,35,57,.065)}
+.v14-fast-fields{display:grid;grid-template-columns:1fr 1fr;gap:17px;margin-bottom:25px}
+.v14-fast-fields label{font-size:12px;color:#324456;display:flex;flex-direction:column;gap:8px;font-weight:600}
+.v14-fast-fields input,.v14-fast-fields select{font:14px var(--sans);width:100%;min-height:45px;max-width:100%;padding:11px 12px;background:#fff;border:1px solid #cfc6b7;color:#193148;border-radius:5px}
+.v14-fast-form .btn{cursor:pointer}
+.v14-fast-note,.v14-fast-status{font-size:11px;color:#6f7b83;line-height:1.6;margin:16px 0 0}
+.v14-fast-status:not(:empty){color:#225a4c}
+.v14-fast-fields input:focus-visible,.v14-fast-fields select:focus-visible,.v14-fast-form button:focus-visible{outline:3px solid #b89466;outline-offset:3px}
+@media(max-width:880px){.v14-quickquote-grid{grid-template-columns:1fr}.v14-quickquote-copy .text-link{margin-top:6px}}
+@media(max-width:560px){.v14-fast-fields{grid-template-columns:1fr}.v14-fast-form{padding:21px}.v14-fast-form .btn{width:100%;justify-content:center;text-align:center}}
+@media(prefers-reduced-motion:no-preference){.floating-wa{animation:at-v14-wa-nudge 1.1s ease 3s 1}@keyframes at-v14-wa-nudge{0%,100%{transform:translateY(0)}35%{transform:translateY(-5px)}70%{transform:translateY(0)}}}
