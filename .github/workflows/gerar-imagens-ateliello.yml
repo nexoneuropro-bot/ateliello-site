@@ -3,7 +3,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'assets-source/atlas.webp'
+      - 'assets-source/atlas-part-07.txt'
   workflow_dispatch:
 
 permissions:
