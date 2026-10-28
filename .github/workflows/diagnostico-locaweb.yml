@@ -19,12 +19,24 @@ jobs:
             getent ahostsv4 "$host" | head -3 || true
             echo "::endgroup::"
           done
-      - name: Inspecionar handshake FTPS explícito sem autenticação
+      - name: Testar AUTH TLS e certificado FTPS sem senha
         shell: bash
         run: |
-          host=ftp.ateliello1.hospedagemdesites.ws
-          echo "Verificando porta 21 e certificado de $host"
-          timeout 25 bash -c 'echo QUIT | openssl s_client -starttls ftp -connect "$1:21" -servername "$1" 2>&1' bash "$host" | grep -E 'subject=|issuer=|Verify return code|verify error|CONNECTED|Verification:' | head -20 || true
+          python3 - <<'PY'
+          import socket,ssl
+          host='ftp.ateliello1.hospedagemdesites.ws'
+          with socket.create_connection((host,21),timeout=5) as sock:
+            sock.settimeout(5)
+            print('Saudação:',sock.recv(256).decode('latin1',errors='replace').strip())
+            sock.sendall(b'AUTH TLS\r\n')
+            response=sock.recv(512).decode('latin1',errors='replace').strip()
+            print('Resposta AUTH TLS:',response)
+            if response.startswith('234'):
+              try:
+                with ssl.create_default_context().wrap_socket(sock,server_hostname=host) as tls:
+                  print('TLS válido:',tls.version(),tls.getpeercert().get('subject'))
+              except ssl.SSLCertVerificationError as ex: print('TLS certificado não validado:',str(ex)[:250])
+          PY
       - name: Testar portas e resposta HTTP de configuração
         shell: bash
         run: |
@@ -46,4 +58,4 @@ jobs:
       - name: Verificar HTTPS do domínio sem autenticação
         shell: bash
         run: |
-          curl -sIL --connect-timeout 8 --max-time 20 -o /dev/null -w 'HTTPS resposta=%{http_code}, IP=%{remote_ip}, redirecionamentos=%{num_redirects}\n' https://ateliello.com.br/ || true
+          curl -sSIL --connect-timeout 8 --max-time 20 -o /dev/null -w 'HTTPS resposta=%{http_code}, IP=%{remote_ip}, redirecionamentos=%{num_redirects}\n' https://ateliello.com.br/ || true
