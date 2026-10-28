@@ -198,3 +198,9 @@ a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible,te
 @media(max-width:890px){.v12-landing-inner,.v12-guide-hero-inner{grid-template-columns:1fr;gap:35px}.v12-landing-photo img{aspect-ratio:16/10;max-height:490px}.v12-landing-grid{grid-template-columns:1fr 1fr}.v12-article-inner{grid-template-columns:1fr;gap:25px}.v12-article aside{position:static}.v12-article aside ul{display:flex;flex-wrap:wrap;gap:15px 30px}.v12-home-guide-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:600px){.v12-landing-inner{padding:0 20px}.v12-landing-hero{padding-top:20px}.v12-landing-copy h1{font-size:44px}.v12-landing-grid,.v12-hub-grid,.v12-home-guide-grid{grid-template-columns:1fr}.v12-landing-end .shell{display:block}.v12-landing-end .btn{margin-top:15px}.v12-landing-photo:before{display:none}.v12-hub-intro{padding:55px 0 30px}.v12-guide-hero-image img{height:300px}.v12-article{padding:55px 0}.v12-home-guides .v12-home-guide-head{display:block}.v12-home-guides .text-link{display:block;margin-top:14px}}
 @media(prefers-reduced-motion:reduce){.v12-hub-card{transition:none}.v12-hub-card:hover{transform:none}}
+
+/* Logotipo metálico oficial recebido da Ateliello — acabamento em diferentes fundos */
+.site-head .brand img{width:248px;max-width:100%;height:auto;aspect-ratio:320/108;object-fit:contain;mix-blend-mode:multiply;filter:drop-shadow(0 3px 5px rgba(12,35,57,.08))}
+.footer .footer-brand img{width:225px;max-width:100%;height:auto;aspect-ratio:320/108;object-fit:contain;filter:invert(1) grayscale(1);mix-blend-mode:screen}
+@media(max-width:1100px){.site-head .brand img{width:200px}}
+@media(max-width:650px){.site-head .brand img{width:176px}.footer .footer-brand img{width:200px}}
