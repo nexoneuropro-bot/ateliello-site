@@ -3,69 +3,78 @@ on:
   workflow_dispatch:
     inputs:
       confirmacao:
-        description: "Digite PUBLICAR ATELIELLO após validar domínio, SSL e backup"
+        description: "Digite PUBLICAR ATELIELLO para autorizar o upload"
         required: true
         type: string
+      modo:
+        description: "Prévia bloqueia Google; produção libera SEO após SSL válido"
+        required: true
+        type: choice
+        default: previa
+        options:
+          - previa
+          - producao
       email_verificado:
-        description: "A caixa contato@ateliello.com.br já envia e recebe?"
+        description: "O e-mail contato@ateliello.com.br foi testado para envio e recebimento?"
         required: true
         default: false
         type: boolean
 permissions:
   contents: read
 concurrency:
-  group: ateliello-locaweb-producao
+  group: ateliello-locaweb
   cancel-in-progress: false
 jobs:
   publicar:
     runs-on: ubuntu-latest
     environment: locaweb-producao
+    timeout-minutes: 15
     steps:
-      - name: Conferir autorização da publicação
+      - name: Confirmar publicação
         env:
           CONFIRMACAO: ${{ inputs.confirmacao }}
-          SITE_DOMAIN: ateliello.com.br
-          FTPS_PATH: public_html
         run: |
           set -euo pipefail
           test "$CONFIRMACAO" = "PUBLICAR ATELIELLO"
-          test "$SITE_DOMAIN" = "ateliello.com.br"
-          test -n "$FTPS_PATH"
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           persist-credentials: false
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: '22'
-      - name: Verificações antes de publicar
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.12'
+      - name: Validar código e páginas
         run: |
-          python3 scripts/check_site.py
+          python scripts/check_site.py
           node --check app.js
           node scripts/check_assistant.mjs
           node scripts/check_campaign.mjs
           node scripts/check_brand.mjs
-          bash -n scripts/publicar_locaweb.sh
-      - name: Gerar versão de produção
+          python -m py_compile scripts/publicar_locaweb_sftp.py
+      - name: Gerar e conferir pacote
         env:
-          RELEASE_APPROVED: "yes"
-          SITE_URL: https://ateliello.com.br
+          DEPLOY_MODE: ${{ inputs.modo }}
           EMAIL_VERIFIED: ${{ inputs.email_verificado == true && 'yes' || 'no' }}
-        run: |
-          node scripts/build_locaweb.mjs --production
-          node scripts/check_release.mjs --production
-      - name: Instalar cliente FTPS
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends lftp
-      - name: Conferir HTTPS do domínio antes de publicar versão indexável
+          SITE_URL: https://ateliello.com.br
         run: |
           set -euo pipefail
+          if [[ "$DEPLOY_MODE" == "producao" ]]; then
+            RELEASE_APPROVED=yes node scripts/build_locaweb.mjs --production
+            node scripts/check_release.mjs --production
+          else
+            node scripts/build_locaweb.mjs
+            node scripts/check_release.mjs
+          fi
+      - name: Verificar HTTPS válido antes da liberação ao Google
+        if: ${{ inputs.modo == 'producao' }}
+        run: |
           curl --silent --show-error --head --location --connect-timeout 8 --max-time 20 https://ateliello.com.br/ > /dev/null
-        shell: bash
-      - name: Transferir arquivos via FTPS
+      - name: Preparar cliente SFTP criptografado
+        run: python -m pip install --disable-pip-version-check paramiko==3.5.1
+      - name: Transferir arquivos com verificação de host SSH
         env:
-          LOCAWEB_FTPS_HOST: ftp.ateliello1.hospedagemdesites.ws
-          LOCAWEB_FTPS_USER: ateliello1
+          DEPLOY_MODE: ${{ inputs.modo }}
           LOCAWEB_FTPS_PASSWORD: ${{ secrets.LOCAWEB_FTPS_PASSWORD }}
-          LOCAWEB_FTPS_REMOTE_DIR: public_html
-        run: bash scripts/publicar_locaweb.sh
+        run: python scripts/publicar_locaweb_sftp.py

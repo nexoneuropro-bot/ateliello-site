@@ -1,28 +1,26 @@
-# Concluir a publicação da Ateliello na Locaweb
+# Concluir a publicação da Ateliello na Locaweb — SFTP protegido
 
-## O que está preparado
-- 34 páginas HTML, identidade e assets locais, WhatsApp, assistente, orçamento, páginas de campanhas e conteúdos orgânicos.
-- Geração verificada dos pacotes de prévia bloqueada e de produção com canonical, sitemap e robots indexável.
-- Workflow manual para transferir produção via **FTPS com TLS obrigatório e verificação de certificado**.
-- O workflow não é executado automaticamente; ele exige confirmação e acesso seguro.
+## O que já sabemos
+- Plano Go Linux, domínio `ateliello.com.br`, FTP host `ftp.ateliello.com.br`, alternativo `ftp.ateliello1.hospedagemdesites.ws`, usuário `ateliello1`, raiz `/home/ateliello1`, site na pasta `public_html`.
+- DNS do domínio e alternativo resolve para `179.188.55.94`; HTTP ainda retorna 403 enquanto o diretório público não tem index.
+- Servidor FTP da porta 21 respondeu `500 Command AUTH not understood`. Não usar FTP sem criptografia.
+- Servidor SSH/SFTP responde na porta 22 com `OpenSSH_8.0`. A chave pública ED25519 foi fixada no script de deploy. A habilitação SSH do usuário pode ser necessária no painel.
+- O HTTPS do domínio ainda apresenta certificado `*.websiteseguro.com`, que não corresponde ao nome do domínio; emitir Let’s Encrypt.
 
-## Dados que faltam (configurar **dentro do GitHub**, nunca compartilhar no chat)
-1. Confirme na Locaweb: hospedagem Linux Go, host alternativo `ftp.ateliello1.hospedagemdesites.ws`, usuário `ateliello1`, pasta de publicação `public_html`, domínio `ateliello.com.br`. Esses dados não secretos já estão preenchidos no workflow conforme captura da conta.
-2. Abra `https://github.com/nexoneuropro-bot/ateliello-site/settings/secrets/actions/new` e cadastre apenas **um segredo** com o nome `LOCAWEB_FTPS_PASSWORD` e a senha FTP do painel. A senha não deve ser escrita no chat, no repositório ou em comentários.
-3. Opcionalmente, crie ambiente `locaweb-producao` em `Settings > Environments` para exigir aprovação de publicação por um responsável. O workflow já usa esse nome; a senha cadastrada como segredo do repositório fica disponível ao workflow.
-4. Faça backup do conteúdo atualmente hospedado. Confirme domínio cadastrado, DNS e certificado HTTPS. Não substitua registros MX existentes sem conferir o e-mail.
-5. No **Painel de E-mail Locaweb**, crie `contato@ateliello.com.br` e configure registros MX, SPF, DKIM e DMARC fornecidos pela Locaweb; teste **envio e recebimento**. Não há API autorizada para criar essa conta neste chat.
-6. Acesse `https://github.com/nexoneuropro-bot/ateliello-site/actions/workflows/publicar-locaweb.yml`, clique **Run workflow**, insira `PUBLICAR ATELIELLO` e marque o e-mail como verificado somente após o teste.
-7. Com a publicação concluída, verifique home, menus, todas as imagens, páginas de campanhas, orçamento, WA, HTML 404, HTTPS, `robots.txt`, `sitemap.xml` e Search Console. Configure análise de anúncios e consentimento antes de ativar Google Ads.
+## Passos curtos sem compartilhar senha no chat
+1. Locaweb: **Configurações > Segurança > Habilitar SSH**. A Locaweb informa que fica habilitado por 3 horas e pode ser reativado depois.
+2. GitHub: abra `https://github.com/nexoneuropro-bot/ateliello-site/settings/secrets/actions/new`. Cadastre **somente** o segredo `LOCAWEB_FTPS_PASSWORD` com sua senha do FTP. A mesma senha costuma ser usada para autenticação SSH do plano Linux.
+3. GitHub Actions: `https://github.com/nexoneuropro-bot/ateliello-site/actions/workflows/publicar-locaweb.yml`. Execute manualmente com texto `PUBLICAR ATELIELLO`, modo `previa`. Isso publica os arquivos **com Google bloqueado**, enquanto o SSL é regularizado.
+4. Locaweb: na aba **Domínios**, em `ateliello.com.br`, escolha **Emitir Let’s Encrypt** (ou via Administrar Site > Informações de domínio) e confira certificado no domínio. A Locaweb pode levar algumas horas para finalizar a emissão.
+5. Depois de testar home, fotos, páginas, orçamento, assistente e WhatsApp via HTTPS, execute a mesma publicação em modo `producao`. Somente esse modo cria `sitemap.xml`, `robots.txt` público e tags indexáveis.
+6. O e-mail já foi criado pelo responsável; marque `email_verificado` somente quando envio e recebimento forem testados. Não alterar MX.
+7. Configure Google Search Console, envie sitemap e revise política de consentimento antes de tags do Google Ads.
 
-## Cuidados
-- FTPS precisa estar disponível e com certificado válido; **não desative** validação TLS nem use FTP sem criptografia. Se não houver FTPS, escolha o WebFTP autenticado ou SFTP do painel em vez de reduzir segurança.
-- A sincronização não remove arquivos remotos, mas substitui arquivos que possuem o mesmo nome. Tenha backup.
-- O sitemap e robots indexável são enviados **após** os demais arquivos; a indexação não é instantânea nem garantida.
-- O e-mail precisa ser criado dentro da Locaweb: transferir o site não cria uma caixa postal.
-- Se o produto Locaweb usar Windows/IIS, não use as regras `.htaccess` geradas para Linux/Apache.
+## Limitações e cautelas
+- A senha não está disponível neste chat e não deve ser enviada nele. O arquivo de deploy lê o segredo protegido do GitHub sem imprimi-lo.
+- O acesso SFTP seguro é validado por chave pública de servidor. Caso a chave mude, o script falha em vez de confiar cegamente no novo host; isso deve ser revisado com a Locaweb.
+- O envio não elimina arquivos antigos; em uma hospedagem recém-configurada isso evita perdas. Se houver `index.php` ou regras preexistentes, conferir a prioridade da página inicial.
+- O upload **não ocorre automaticamente** quando o código é alterado: requer execução manual e segredo protegido.
+- Se o SSH da conta estiver desabilitado, o login SFTP falhará. Não usar a porta 21 sem criptografia como alternativa.
 
-Documentação Locaweb: https://www.locaweb.com.br/ajuda/wiki/como-criar-site-na-locaweb/ e https://www.locaweb.com.br/ajuda/wiki/como-configurar-dominio-painel-email-locaweb/
-
-## Atenção: verificação de segurança
-O workflow recusa o envio da versão **indexável** quando o HTTPS de `https://ateliello.com.br/` não responde com certificado válido. A configuração do domínio e SSL precisa estar concluída antes da publicação. A conexão FTPS usa TLS explícito; caso o certificado fornecido pela hospedagem não seja reconhecido com o hostname alternativo, não se deve desligar sua validação sem um método de autenticação equivalente.
+Documentação oficial: https://www.locaweb.com.br/ajuda/wiki/como-habilitar-o-ssh-pelo-painel-de-hospedagem-hospedagem-de-sites/ e https://www.locaweb.com.br/ajuda/wiki/como-emitir-o-certificado-lets-encrypt-hospedagem-de-sites/
