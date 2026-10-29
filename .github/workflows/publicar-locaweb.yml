@@ -58,7 +58,7 @@ jobs:
           python -m py_compile scripts/publicar_locaweb_go_ftp.py
       - name: Preparar somente arquivos públicos
         env:
-          DEPLOY_MODE: ${{ github.event_name == 'push' && 'previa' || inputs.modo }}
+          DEPLOY_MODE: ${{ github.event_name == 'push' && 'producao' || inputs.modo }}
           EMAIL_VERIFIED: ${{ github.event_name == 'workflow_dispatch' && inputs.email_verificado == true && 'yes' || 'no' }}
           SITE_URL: https://ateliello.com.br
         run: |
@@ -71,10 +71,10 @@ jobs:
             node scripts/check_release.mjs
           fi
       - name: Exigir HTTPS válido para indexação de produção
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.modo == 'producao' }}
+        if: ${{ github.event_name == 'push' || inputs.modo == 'producao' }}
         run: curl --silent --show-error --head --location --connect-timeout 8 --max-time 20 https://ateliello.com.br/ > /dev/null
       - name: Transferir arquivos para public_html (FTP GO)
         env:
-          DEPLOY_MODE: ${{ github.event_name == 'push' && 'previa' || inputs.modo }}
+          DEPLOY_MODE: ${{ github.event_name == 'push' && 'producao' || inputs.modo }}
           LOCAWEB_FTPS_PASSWORD: ${{ secrets.LOCAWEB_FTPS_PASSWORD }}
         run: python scripts/publicar_locaweb_go_ftp.py

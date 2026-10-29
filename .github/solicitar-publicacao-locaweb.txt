@@ -10,3 +10,5 @@ Objetivo: publicar prévia sem indexação e testar no domínio.
 
 Reexecução autorizada pelo cliente após redefinir a senha FTP e atualizar LOCAWEB_FTPS_PASSWORD no GitHub.
 Objetivo: publicar somente a prévia no public_html, sem indexação de buscadores.
+
+Autorização continuada de publicação direta em produção, 29/10/2026. Commit visual validado em GitHub Actions, modo produção exige HTTPS, testes de conteúdo e SEO antes de enviar ao public_html. E-mail existente não será alterado.
