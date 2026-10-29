@@ -1,4 +1,4 @@
-name: Verificar site Ateliello publicado
+name: Verificar Ateliello em produção na Locaweb
 on:
   push:
     paths:
@@ -7,52 +7,43 @@ on:
 permissions:
   contents: read
 jobs:
-  publico:
+  conferir-producao:
     runs-on: ubuntu-latest
     timeout-minutes: 6
     steps:
-      - name: Testar dominio, paginas e recursos publicados
+      - name: Conferir HTTPS, paginas, logo, JavaScript e SEO em producao
         run: |
           python3 - <<'PY'
-          import http.client, ssl
-          host='ateliello.com.br'
+          import urllib.request, ssl
+          base="https://ateliello.com.br"
           checks={
-            '/': [b'Ateliello',b'noindex,nofollow'],
-            '/robots.txt':[b'Disallow: /'],
-            '/app.js':[b'const $='],
-            '/style.css':[b'.site-head'],
-            '/assets/logo-ateliello-metalico.webp':[],
-            '/campanha-uniformes-empresas.html':[b'Uniformes para sua equipe',b'noindex,nofollow'],
-            '/campanha-jalecos-clinicas.html':[b'Jalecos e uniformes',b'noindex,nofollow'],
-            '/campanha-toalhas-presentes.html':[b'Um nome bordado',b'noindex,nofollow'],
-            '/orcamento.html':[b'Ateliello',b'noindex,nofollow'],
-            '/guias-bordado-personalizacao.html':[b'Ateliello',b'noindex,nofollow']
+            "/": [b'Ateliello',b'index,follow,max-image-preview:large',b'logo-ateliello-com-assinatura.png',b'Sua identidade'],
+            "/robots.txt": [b'Allow: /',b'sitemap.xml'],
+            "/sitemap.xml": [b'ateliello.com.br',b'<urlset'],
+            "/app.js": [b'const $=',b'$$'],
+            "/style.css": [b'.site-head',b'revis'],
+            "/assets/logo-ateliello-com-assinatura.png": [],
+            "/uniformes-personalizados.html": [b'index,follow,max-image-preview:large'],
+            "/bordados-personalizados.html": [b'index,follow,max-image-preview:large'],
+            "/toalhas-roupoes-personalizados.html": [b'index,follow,max-image-preview:large'],
+            "/orcamento.html": [b'Ateliello'],
+            "/contato.html": [b'Ateliello']
           }
           failed=[]
           for path,needles in checks.items():
             try:
-              c=http.client.HTTPConnection(host,80,timeout=12)
-              c.request('GET',path,headers={'User-Agent':'Ateliello-Release-QA/1.0'})
-              response=c.getresponse()
-              data=response.read(200000)
-              code=response.status
-              match=all(x.lower() in data.lower() for x in needles)
-              print(f'HTTP {code} {path} bytes={len(data)} markers={match}')
-              if code!=200 or not match: failed.append(path)
-              c.close()
+              request=urllib.request.Request(base+path,headers={"User-Agent":"Ateliello-Production-QA/1.0"})
+              with urllib.request.urlopen(request,timeout=18,context=ssl.create_default_context()) as response:
+                data=response.read(300000)
+                code=response.status
+                ok=code==200 and all(marker.lower() in data.lower() for marker in needles)
+                print("HTTPS",code,path,"bytes=",len(data),"marcadores=",ok)
+                if not ok:failed.append(path)
             except Exception as ex:
-              print(f'HTTP erro {path}: {type(ex).__name__}: {str(ex)[:150]}')
+              print("Falha",path,type(ex).__name__,str(ex)[:200])
               failed.append(path)
-          try:
-            c=http.client.HTTPSConnection(host,443,timeout=12,context=ssl.create_default_context())
-            c.request('GET','/')
-            response=c.getresponse()
-            print('HTTPS certificado validado:',response.status)
-            c.close()
-          except Exception as ex:
-            print(f'HTTPS certificado ainda pendente: {type(ex).__name__}: {str(ex)[:230]}')
-          print('PAGINAS_HTTP_VERIFICADAS=',len(checks)-len(failed),'/',len(checks))
+          print("VERIFICADOS=",len(checks)-len(failed),"/",len(checks))
           if failed:
-            print('RECURSOS_A_CORRIGIR=',','.join(failed))
+            print("FALHAS=",",".join(failed))
             raise SystemExit(1)
           PY
