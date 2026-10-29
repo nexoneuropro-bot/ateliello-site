@@ -27,9 +27,17 @@ for(const page of pages){
  html=html.replace("</head>",seo+"</head>");
  html=html.replace(/<meta property="og:image" content="([^"]*)">/,(_,img)=>'<meta property="og:image" content="'+esc(new URL(img,site+"/").href)+'">');
  html=html.replace(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g,(match,json)=>{let obj;try{obj=JSON.parse(json)}catch{return match;}
- const amend=(v)=>{if(!v||typeof v!=="object")return;if(Array.isArray(v)){v.forEach(amend);return;}if(v["@type"]==="Organization"){v.url=site+"/";v.logo=site+"/assets/logo-ateliello-metalico.webp";}if(v["@graph"])amend(v["@graph"]);};amend(obj);
+ const amend=(v)=>{if(!v||typeof v!=="object")return;if(Array.isArray(v)){v.forEach(amend);return;}if(v["@type"]==="Organization"){v.url=site+"/";v.logo=site+"/assets/logo-ateliello-com-assinatura.png";}if(v["@graph"])amend(v["@graph"]);};amend(obj);
  return '<script type="application/ld+json">'+JSON.stringify(obj).replaceAll("<","\\u003c")+"</script>";});
- if(page==="index.html")html=html.replaceAll('href="index.html"','href="/"');
+ html=html.replaceAll('assets/logo-ateliello-metalico.webp','assets/logo-ateliello-com-assinatura.png');
+ html=html.replace(/>Bordados <span aria-hidden="true">⌄<\/span>/g,'>Bordados personalizados <span aria-hidden="true">⌄</span>');
+ html=html.replace(/>Para você <span aria-hidden="true">⌄<\/span>/g,'>Toalhas e roupões <span aria-hidden="true">⌄</span>');
+ if(!html.includes('>Kits especiais</a>'))html=html.replace('<a class="menu-link" href="tecidos-personalizacao.html">','<a class="menu-link" href="kits-casamento.html">Kits especiais</a><a class="menu-link" href="tecidos-personalizacao.html">');
+ if(page==="index.html"){
+ html=html.replace('<h1>Uniformes e bordados<br>com <em>propósito.</em></h1>','<h1>Sua identidade <em>em cada detalhe.</em></h1>');
+ html=html.replace('Do uniforme que representa sua marca ao presente que guarda memórias. Peças personalizadas com escolha de tecidos, cuidado de ateliê e produção profissional.','Uniformes profissionais, bordados personalizados e peças especiais para empresas e para você. Do primeiro uniforme ao presente especial.');
+ }
+  if(page==="index.html")html=html.replaceAll('href="index.html"','href="/"');
  if(page==="politica-de-privacidade.html"&&production){
   html=html.replace("Esta política descreve a experiência atual de prévia. A assistente virtual desta prévia","Esta política descreve o atendimento por meio deste site. A assistente virtual");
  }
@@ -58,6 +66,6 @@ if(production){
 } else {
  fs.writeFileSync(path.join(out,"robots.txt"),"User-agent: *\nDisallow: /\n");
 }
-fs.writeFileSync(path.join(out,"404.html"),'<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="robots" content="noindex,nofollow"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Página não encontrada | Ateliello</title><link rel="stylesheet" href="/style.css"></head><body><main class="shell" style="min-height:70vh;padding:8vh 0"><a href="/" aria-label="Início da Ateliello"><img src="/assets/logo-ateliello-metalico.webp" width="200" alt="Ateliello Uniformes e Bordados"></a><h1 style="font-size:clamp(36px,5vw,70px);margin:40px 0 15px">Esta página não foi encontrada.</h1><p>O cuidado continua aqui. Explore nossos serviços ou converse com o ateliê.</p><p><a class="btn primary" href="/">Voltar ao início</a> <a class="btn outline" href="/orcamento.html">Pedir orçamento</a></p></main></body></html>');
+fs.writeFileSync(path.join(out,"404.html"),'<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="robots" content="noindex,nofollow"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Página não encontrada | Ateliello</title><link rel="stylesheet" href="/style.css"></head><body><main class="shell" style="min-height:70vh;padding:8vh 0"><a href="/" aria-label="Início da Ateliello"><img src="/assets/logo-ateliello-com-assinatura.png" width="200" alt="Ateliello Uniformes e Bordados"></a><h1 style="font-size:clamp(36px,5vw,70px);margin:40px 0 15px">Esta página não foi encontrada.</h1><p>O cuidado continua aqui. Explore nossos serviços ou converse com o ateliê.</p><p><a class="btn primary" href="/">Voltar ao início</a> <a class="btn outline" href="/orcamento.html">Pedir orçamento</a></p></main></body></html>');
 const listing=fs.readdirSync(out).filter(x=>x.endsWith(".html")).length;
 console.log((production?"PRODUÇÃO INDEXÁVEL":"PRÉVIA BLOQUEADA")+" | "+listing+" HTML (incluindo 404), "+urls.length+" URLs do sitemap em produção.");

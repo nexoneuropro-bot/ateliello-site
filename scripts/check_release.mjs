@@ -1,7 +1,7 @@
 import fs from "node:fs";import path from "node:path";import assert from "node:assert/strict";
 const root="dist-locaweb",live=process.argv.includes("--production"),site=(process.env.SITE_URL||"https://ateliello.com.br").replace(/\/+$/,"");
 assert.ok(fs.existsSync(path.join(root,"index.html")));
-assert.ok(fs.existsSync(path.join(root,"assets/logo-ateliello-metalico.webp")));
+assert.ok(fs.existsSync(path.join(root,"assets/logo-ateliello-com-assinatura.png")));
 assert.ok(fs.existsSync(path.join(root,"style.css")));
 assert.ok(fs.existsSync(path.join(root,"app.js")));
 const pages=fs.readdirSync(root).filter(x=>x.endsWith(".html")&&x!=="404.html");

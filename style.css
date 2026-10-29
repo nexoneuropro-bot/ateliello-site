@@ -277,3 +277,20 @@ a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible,te
   .site-head .nav-wrap{min-height:74px}
   .footer .footer-brand img{width:205px}
 }
+
+/* Ateliello — revisão premium e legibilidade — 2026-10-29 */
+.site-head .brand img,.footer .footer-brand img{mix-blend-mode:normal!important;filter:none!important;mask:none!important;object-fit:contain;object-position:left center}
+.site-head .brand img{width:200px;height:auto;max-width:100%}
+.site-head .nav-wrap{min-height:82px}
+.main-nav{column-gap:9px}
+.main-nav .menu-link,.main-nav .menu-drop>button{font-weight:600;letter-spacing:0}
+.main-nav .quote-top{font-weight:700;white-space:nowrap}
+.home-hero{min-height:600px}
+.home-hero .hero-content{padding:70px 0}
+.home-hero .hero-copy{max-width:640px}
+.home-hero .hero-copy h1{font-size:clamp(50px,5.2vw,76px);line-height:1.08;letter-spacing:-.04em;max-width:650px;text-wrap:balance}
+.home-hero .hero-copy>p{font-size:17px;line-height:1.6;max-width:560px}
+.home-hero .hero-image-shade{background:linear-gradient(90deg,rgba(4,19,32,.87) 0%,rgba(5,23,38,.68) 36%,rgba(9,30,47,.06) 78%)}
+.reveal,.hero-copy.reveal{opacity:1!important;transform:none!important}
+@media(max-width:1260px){.site-head .brand img{width:188px}.menu-toggle{display:block}.main-nav{position:absolute;left:0;right:0;top:100%;background:var(--at-header,#fff);padding:20px 26px 28px;display:none;flex-direction:column;align-items:stretch;gap:4px;box-shadow:0 18px 25px #0c233925;max-height:calc(100vh - 77px);overflow-y:auto}.main-nav.open{display:flex}.main-nav .menu-link,.main-nav .menu-drop>button{font-size:15px;padding:12px 0}.menu-drop>button{width:100%;text-align:left}.menu-drop .drop-panel{position:static;box-shadow:none;margin-bottom:8px;min-width:0}.main-nav .quote-top{text-align:center;padding:16px}}
+@media(max-width:660px){.site-head .brand img{width:173px}.home-hero{min-height:650px;align-items:flex-end}.home-hero .hero-content{padding:45px 0 40px}.home-hero .hero-copy h1{font-size:clamp(41px,10.4vw,55px)}.home-hero .hero-copy>p{font-size:14px;line-height:1.55}.home-hero .hero-image-shade{background:linear-gradient(0deg,rgba(5,19,34,.94) 0%,rgba(5,19,34,.76) 55%,rgba(5,19,34,.12) 100%)}}
